@@ -1,0 +1,107 @@
+package com.anhduc.backend.service;
+
+import com.anhduc.backend.dto.UserDTO;
+import com.anhduc.backend.entity.User;
+import com.anhduc.backend.repository.UserRepository;
+import jakarta.persistence.NoResultException;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+public interface UserService {
+
+    User addUser(UserDTO userDTO);
+
+    void updateUser(UserDTO userDTO);
+
+    void deleteUser(int id);
+
+    void updatePassword(int id, String newPassword);
+
+    UserDTO getUser(int id);
+
+    List<UserDTO> getUsers();
+
+}
+
+@Service
+class UserServiceImpl implements UserService{
+
+    private final UserRepository userRepository;
+
+    private final ModelMapper modelMapper;
+
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
+        configureModelMapper();
+    }
+
+    private void configureModelMapper() {
+        modelMapper.typeMap(UserDTO.class, User.class)
+                .addMappings(mapper -> mapper.skip(User::setPassword));
+    }
+
+    private User findUserById(int id) {
+        return userRepository.findById(id).orElseThrow(() -> new NoResultException("User not found " + id));
+    }
+
+
+    @Override
+    @Transactional
+    public User addUser(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setConfirmation_token(UUID.randomUUID().toString());
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(UserDTO userDTO) {
+        User user = findUserById(userDTO.getId());
+        modelMapper.map(userDTO, user);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(int id) {
+        User user = findUserById(id);
+        userRepository.delete(user);
+    }
+
+    @Override
+    @Transactional
+    public void updatePassword(int id, String newPassword) {
+        User user = findUserById(id);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDTO getUser(int id) {
+        User user = findUserById(id);
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> getUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+}
