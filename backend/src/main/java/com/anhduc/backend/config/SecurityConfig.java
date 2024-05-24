@@ -71,26 +71,10 @@ public class SecurityConfig {
                 .requestMatchers("/adminb/**")
                 .hasAuthority("admin")
                 .anyRequest().permitAll()
-                .and().sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(AbstractHttpConfigurer::disable)
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/oauth2/authorization/google")
-                        .defaultSuccessUrl("/loginSuccess")
-                        .failureUrl("/loginFailure")
-                )
-                .logout(logout -> logout
-                        .logoutSuccessHandler(logoutSuccessHandler())
-                );
-
+                .and().sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
+                .csrf(AbstractHttpConfigurer::disable);
         http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    @Bean
-    public LogoutSuccessHandler logoutSuccessHandler() {
-        return (request, response, authentication) -> {
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().flush();
-        };
-    }
 }

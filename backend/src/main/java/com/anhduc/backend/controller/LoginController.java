@@ -45,18 +45,4 @@ public class LoginController {
     }
 
 
-    @GetMapping("/loginSuccess")
-    public String loginSuccess(OAuth2AuthenticationToken authentication) {
-        Map<String, Object> userAttributes = authentication.getPrincipal().getAttributes();
-        // Xử lý thông tin người dùng
-        return "Login Success: " + userAttributes;
-    }
-
-    @PostMapping("/google-login")
-    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> body) {
-        String token = body.get("token");
-        // Xác thực và xử lý token, lấy thông tin người dùng
-        // Trả về thông tin người dùng và accessToken
-    }
-
 }
