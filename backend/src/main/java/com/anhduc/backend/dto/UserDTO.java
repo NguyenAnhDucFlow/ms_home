@@ -4,8 +4,10 @@ package com.anhduc.backend.dto;
 
 import com.anhduc.backend.entity.enums.AccountStatus;
 import com.anhduc.backend.entity.enums.Gender;
-import com.anhduc.backend.entity.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 
@@ -20,10 +22,11 @@ public class UserDTO {
 
     private String password;
 
-    private UserRole role;
+    private RoleDTO role;
 
     private String phone;
 
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "Asia/Ho_Chi_Minh")
     private Instant created;
 
     private Instant last_login;
@@ -41,5 +44,12 @@ public class UserDTO {
     private String confirmation_token;
 
     private boolean confirmed = false;
+
+    private boolean verified = false;
+
+    private String verificationCode;
+
+    @JsonIgnore
+    private MultipartFile file;
 
 }

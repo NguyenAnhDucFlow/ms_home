@@ -84,7 +84,7 @@ export default function MainHeader() {
 
           {!user ? (
             <>
-              <Button variant="outlined" sx={{ marginRight: 1 }}>Đăng nhập</Button>
+              <Button variant="outlined" sx={{ marginRight: 1 }} href='/auth/login'>Đăng nhập</Button>
               <Button variant="contained" color="primary">Đăng kí</Button>
             </>
           ) : (

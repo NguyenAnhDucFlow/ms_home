@@ -25,12 +25,12 @@ class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User userEntity = userRepository.findByEmail(username);
+    public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
+        User userEntity = userRepository.findByPhone(phone);
         if (userEntity == null) {
-            throw new UsernameNotFoundException("User with email " + username + " not found");
+            throw new UsernameNotFoundException("User with phone " + phone + " not found");
         }
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(userEntity.getRole().name());
-        return new org.springframework.security.core.userdetails.User(username, userEntity.getPassword(), Collections.singletonList(simpleGrantedAuthority));
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(userEntity.getRole().getName());
+        return new org.springframework.security.core.userdetails.User(phone, userEntity.getPassword(), Collections.singletonList(simpleGrantedAuthority));
     }
 }

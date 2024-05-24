@@ -3,11 +3,11 @@ package com.anhduc.backend.entity;
 
 import com.anhduc.backend.entity.enums.AccountStatus;
 import com.anhduc.backend.entity.enums.Gender;
-import com.anhduc.backend.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
@@ -16,8 +16,10 @@ import java.time.Instant;
 @Setter
 @Table(indexes = {
         @Index(columnList = "email", name = "index_email"),
-        @Index(columnList = "confirmation_token", name = "index_confirmation_token")
+        @Index(columnList = "confirmation_token", name = "index_confirmation_token"),
+        @Index(columnList = "phone", name = "index_phone")
 })
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
@@ -31,9 +33,6 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
 
     private String phone;
 
@@ -58,5 +57,13 @@ public class User {
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean confirmed = false;
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean verified = false;
+
+    private String verificationCode;
+
+    @ManyToOne
+    private Role role;
 
 }

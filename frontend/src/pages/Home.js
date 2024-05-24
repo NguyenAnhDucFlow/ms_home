@@ -1,6 +1,6 @@
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Stack, Card, Typography, Container, Grid, Button, Link, useTheme } from '@mui/material';
+import { Box, Typography, Container, Grid, Button, useTheme } from '@mui/material';
 import Slider from 'react-slick';
 import { m } from 'framer-motion';
 
@@ -10,7 +10,6 @@ import { MotionViewport, varFade } from '../components/animate';
 // sections
 import {
   HomeHero,
-  HomeMinimal,
 } from '../sections/home';
 import ServiceCard from '../sections/@dashboard/service/ServiceCard';
 

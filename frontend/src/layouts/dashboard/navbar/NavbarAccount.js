@@ -31,6 +31,7 @@ NavbarAccount.propTypes = {
 
 export default function NavbarAccount({ isCollapse }) {
   const { user } = useAuth();
+  console.log("username", user.username)
 
   return (
     <Link underline="none" color="inherit" component={RouterLink} to={PATH_DASHBOARD.user.account}>
@@ -57,13 +58,14 @@ export default function NavbarAccount({ isCollapse }) {
           }}
         >
           <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+            {user?.username}
           </Typography>
           <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-            {user?.role}
+            {user?.role.name}
           </Typography>
         </Box>
       </RootStyle>
     </Link>
   );
 }
+

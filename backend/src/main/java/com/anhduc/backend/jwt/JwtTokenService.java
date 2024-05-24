@@ -30,8 +30,8 @@ public class JwtTokenService {
 
     private long validity = 60;
 
-    public TokenAndUser createToken(String email, List<String> authority){
-        Claims claims = Jwts.claims().setSubject(email);
+    public TokenAndUser createToken(String phone, List<String> authority){
+        Claims claims = Jwts.claims().setSubject(phone);
         claims.put("authorities", authority);
         Date now = new Date();
         Date exp = new Date(now.getTime() + validity * 60 * 1000);
@@ -41,7 +41,7 @@ public class JwtTokenService {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByPhone(phone);
         convert(user);
 
         return new TokenAndUser(token, convert(user));

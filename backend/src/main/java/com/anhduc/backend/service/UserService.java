@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public interface UserService {
 
-    User addUser(UserDTO userDTO);
+    void addUser(UserDTO userDTO);
+
+    User registerUser(UserDTO userDTO);
 
     void updateUser(UserDTO userDTO);
 
@@ -39,11 +40,14 @@ class UserServiceImpl implements UserService{
 
     private final PasswordEncoder passwordEncoder;
 
+    private final SmsService smsService;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, SmsService smsService) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
+        this.smsService = smsService;
         configureModelMapper();
     }
 
@@ -59,10 +63,17 @@ class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public User addUser(UserDTO userDTO) {
+    public void addUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setConfirmation_token(UUID.randomUUID().toString());
+        userRepository.save(user);
+    }
+
+    @Override
+    public User registerUser(UserDTO userDTO) {
+        User user = new User();
+        user.setPhone(userDTO.getPhone());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         return userRepository.save(user);
     }
 
