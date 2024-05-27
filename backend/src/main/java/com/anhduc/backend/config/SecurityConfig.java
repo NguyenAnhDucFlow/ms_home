@@ -2,7 +2,6 @@ package com.anhduc.backend.config;
 
 import com.anhduc.backend.jwt.JwtTokenFilter;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -36,10 +33,7 @@ public class SecurityConfig {
     @Autowired
     JwtTokenFilter tokenFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 
     @Autowired
     public void config(AuthenticationManagerBuilder auth)
@@ -68,8 +62,11 @@ public class SecurityConfig {
                     }
                 }).and() // Enable CORS globally
                 .authorizeRequests()
-                .requestMatchers("/adminb/**")
-                .hasAuthority("admin")
+                .requestMatchers("/api/users/register", "/api/users/confirm-account").permitAll()
+                .requestMatchers("/api/student/**")
+                .hasAuthority("STUDENT")
+                .requestMatchers("/api/landlord/**").hasAuthority("LANDLORD")
+                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                 .anyRequest().permitAll()
                 .and().sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .csrf(AbstractHttpConfigurer::disable);
@@ -77,4 +74,9 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

@@ -36,11 +36,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if(username != null){
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-
-                //gia lap security
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
         filterChain.doFilter(request, response);
     }
+
 }

@@ -1,23 +1,15 @@
 package com.anhduc.backend.controller;
 
-import com.anhduc.backend.dto.LoginDTO;
 import com.anhduc.backend.dto.ResponseDTO;
 import com.anhduc.backend.jwt.JwtTokenService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,16 +23,14 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseDTO<JwtTokenService.TokenAndUser> login(
-            @RequestBody @Valid LoginDTO loginDTO)  {
+            @RequestParam("phone") String phone,
+            @RequestParam("password")  String password)  {
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getPhone(), loginDTO.getPassword()));
-
-        List<String> authorities = authentication.getAuthorities().stream()
-                .map(e -> e.getAuthority()).collect(Collectors.toList());
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(phone, password));
 
         return ResponseDTO.<JwtTokenService.TokenAndUser>builder()
                 .status(HttpStatus.OK)
-                .data(jwtTokenService.createToken(loginDTO.getPhone(), authorities))
+                .data(jwtTokenService.createToken(phone))
                 .build();
     }
 

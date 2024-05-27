@@ -1,34 +1,34 @@
 package com.anhduc.backend.service;
 
 import com.anhduc.backend.dto.UserDTO;
+import com.anhduc.backend.dto.UserRegistrationDTO;
+import com.anhduc.backend.entity.Status;
 import com.anhduc.backend.entity.User;
+import com.anhduc.backend.exception.ResourceNotFoundException;
 import com.anhduc.backend.repository.UserRepository;
-import jakarta.persistence.NoResultException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public interface UserService {
 
-    void addUser(UserDTO userDTO);
-
-    User registerUser(UserDTO userDTO);
-
+    void registerUser(UserRegistrationDTO registrationDTO);
+    void confirmUser(String confirmationToken);
+    List<UserDTO> getAllUsers();
+    UserDTO getUserById(Long id);
+    void createUser(UserDTO userDTO);
     void updateUser(UserDTO userDTO);
-
-    void deleteUser(int id);
-
-    void updatePassword(int id, String newPassword);
-
-    UserDTO getUser(int id);
-
-    List<UserDTO> getUsers();
-
+    void deleteUserById(Long id);
+    void updatePassword(Long id, String newPassword);
 }
 
 @Service
@@ -38,43 +38,88 @@ class UserServiceImpl implements UserService{
 
     private final ModelMapper modelMapper;
 
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     private final SmsService smsService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder, SmsService smsService) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, SmsService smsService) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.smsService = smsService;
-        configureModelMapper();
     }
 
-    private void configureModelMapper() {
-        modelMapper.typeMap(UserDTO.class, User.class)
-                .addMappings(mapper -> mapper.skip(User::setPassword));
-    }
 
-    private User findUserById(int id) {
-        return userRepository.findById(id).orElseThrow(() -> new NoResultException("User not found " + id));
+    private User findUserById(long id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found " + id));
     }
 
 
     @Override
     @Transactional
-    public void addUser(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+    public void registerUser(UserRegistrationDTO registrationDTO) {
+        if (userRepository.findByPhone(registrationDTO.getPhone()).isPresent()) {
+            throw new IllegalArgumentException("Phone number already in use");
+        }
+        User user = modelMapper.map(registrationDTO, User.class);
+        user.setPasswordHash(passwordEncoder.encode(registrationDTO.getPassword()));
+        user.setConfirmationToken(UUID.randomUUID().toString());
+        user.setExpiresAt(LocalDateTime.now().plusHours(24));
+        user.setUsername(registrationDTO.getFullName());
         userRepository.save(user);
+        sendConfirmationSms(registrationDTO.getPhone(), user.getConfirmationToken());
     }
 
     @Override
-    public User registerUser(UserDTO userDTO) {
-        User user = new User();
-        user.setPhone(userDTO.getPhone());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        return userRepository.save(user);
+    @Transactional
+    public void confirmUser(String confirmationToken) {
+
+        Optional<User> optionalUser = userRepository.findByConfirmationToken(confirmationToken);
+        if (optionalUser.isEmpty())
+            throw new IllegalArgumentException("Invalid confirmation token");
+
+        User user = optionalUser.get();
+
+        if (user.getExpiresAt().isBefore(LocalDateTime.now())) {
+            userRepository.delete(user);
+            throw new IllegalArgumentException("Expired confirmation token");
+        }
+
+        user.setEnabled(true);
+        user.setStatus(Status.ACTIVE);
+        user.setConfirmationToken(null);
+        user.setExpiresAt(null);
+        userRepository.save(user);
+
+    }
+
+    private void sendConfirmationSms(String phoneNumber, String confirmationToken) {
+        String message = "Your confirmation code is: " + confirmationToken;
+        smsService.sendSms(phoneNumber, message);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDTO getUserById(Long id) {
+        User user = findUserById(id);
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+    @Override
+    @Transactional
+    public void createUser(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class);
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+        userRepository.save(user);
     }
 
     @Override
@@ -87,32 +132,16 @@ class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public void deleteUser(int id) {
-        User user = findUserById(id);
-        userRepository.delete(user);
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void updatePassword(int id, String newPassword) {
+    public void updatePassword(Long id, String newPassword) {
         User user = findUserById(id);
-        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserDTO getUser(int id) {
-        User user = findUserById(id);
-        return modelMapper.map(user, UserDTO.class);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserDTO> getUsers() {
-        return userRepository.findAll().stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
-                .collect(Collectors.toList());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.anhduc.backend.service;
 
+
 import com.anhduc.backend.entity.User;
 import com.anhduc.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 public interface CustomUserDetailsService extends UserDetailsService {
     // Add any custom methods if necessary
@@ -26,11 +28,12 @@ class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
-        User userEntity = userRepository.findByPhone(phone);
-        if (userEntity == null) {
+        Optional<User> optionalUser = userRepository.findByPhone(phone);
+        if (optionalUser.isEmpty()) {
             throw new UsernameNotFoundException("User with phone " + phone + " not found");
         }
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(userEntity.getRole().getName());
-        return new org.springframework.security.core.userdetails.User(phone, userEntity.getPassword(), Collections.singletonList(simpleGrantedAuthority));
+        User user = optionalUser.get();
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().name());
+        return new org.springframework.security.core.userdetails.User(user.getPhone(), user.getPasswordHash(), Collections.singletonList(simpleGrantedAuthority));
     }
 }

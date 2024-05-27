@@ -1,69 +1,63 @@
 package com.anhduc.backend.entity;
 
-
-import com.anhduc.backend.entity.enums.AccountStatus;
-import com.anhduc.backend.entity.enums.Gender;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.Data;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
-@Getter
-@Setter
-@Table(indexes = {
-        @Index(columnList = "email", name = "index_email"),
-        @Index(columnList = "confirmation_token", name = "index_confirmation_token"),
-        @Index(columnList = "phone", name = "index_phone")
-})
-@EntityListeners(AuditingEntityListener.class)
+@Data
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
+    @Column(nullable = false, length = 255)
     private String username;
 
-    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
-
-    private String phone;
-
-    @CreatedDate
-    @Column(updatable = false, nullable = false)
-    private Instant created;
-
-    private Instant last_login;
-
-    private String profile_picture;
+    @Column(nullable = false, length = 255)
+    private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus userStatus = AccountStatus.PENDING;
+    @Column(nullable = false, length = 10)
+    private Role role = Role.STUDENT;
 
+    @Column(length = 15)
+    private String phone;
+
+    @Column(length = 255)
+    private String profilePicture;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 8)
+    private Status status = Status.PENDING;
+
+    @Column(length = 255)
     private String address;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 6)
     private Gender gender;
 
-    private Instant birthdate;
+    private Date birthdate;
 
-    private String confirmation_token;
+    @Column(length = 255)
+    private String confirmationToken;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private boolean confirmed = false;
+    private Boolean confirmed = false;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private boolean verified = false;
+    private Boolean enabled = false;
 
-    private String verificationCode;
+    private Boolean addressVerified = false;
 
-    @ManyToOne
-    private Role role;
+    private LocalDateTime expiresAt;
+}
 
+enum Gender {
+    MALE, FEMALE, ORDER
 }

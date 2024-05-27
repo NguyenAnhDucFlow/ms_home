@@ -7,6 +7,7 @@ import com.anhduc.backend.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.persistence.NoResultException;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JwtTokenService {
@@ -30,9 +32,8 @@ public class JwtTokenService {
 
     private long validity = 60;
 
-    public TokenAndUser createToken(String phone, List<String> authority){
+    public TokenAndUser createToken(String phone){
         Claims claims = Jwts.claims().setSubject(phone);
-        claims.put("authorities", authority);
         Date now = new Date();
         Date exp = new Date(now.getTime() + validity * 60 * 1000);
 
@@ -41,15 +42,12 @@ public class JwtTokenService {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        User user = userRepository.findByPhone(phone);
-        convert(user);
+        User user = userRepository.findByPhone(phone).orElseThrow(() -> new NoResultException("User not found"));
 
-        return new TokenAndUser(token, convert(user));
+        return new TokenAndUser(token, user);
     }
 
-    private UserDTO convert(User user) {
-        return modelMapper.map(user, UserDTO.class);
-    }
+
 
     public boolean inValidToken(String token){
         try {
@@ -61,15 +59,7 @@ public class JwtTokenService {
         return false;
     }
 
-    @Data
-    public static class TokenAndUser {
-        private final String accessToken;
-        private final UserDTO user;
-
-        public TokenAndUser(String accessToken, UserDTO user) {
-            this.accessToken = accessToken;
-            this.user = user;
-        }
+    public record TokenAndUser(String accessToken, User user) {
     }
 
     public String getUsername(String token){
