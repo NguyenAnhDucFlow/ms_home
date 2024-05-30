@@ -35,6 +35,7 @@ public interface UserService {
     String createPasswordResetTokenForUser(String email);
     String validatePasswordResetToken(String token);
     String resetPassword(String token, String newPassword);
+    UserDTO getUserByEmail(String email);
 }
 
 @Service
@@ -248,6 +249,12 @@ class UserServiceImpl implements UserService{
         userRepository.save(user);
         passwordResetTokenRepository.delete(passwordResetToken);
         return "Password reset successful.";
+    }
+
+    @Override
+    public UserDTO getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return modelMapper.map(user, UserDTO.class);
     }
 
 }
