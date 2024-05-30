@@ -36,11 +36,11 @@ public class PropertyListing extends Auditable{
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private ListingStatus status;
+    private ListingStatus status = ListingStatus.AVAILABLE;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private VerificationStatus verificationStatus;
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
 
 }
 

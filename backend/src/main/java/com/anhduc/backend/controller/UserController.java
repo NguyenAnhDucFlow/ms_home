@@ -39,25 +39,38 @@ public class UserController {
     UserRepository userRepository;
 
     @GetMapping("/confirm-account")
-    public ResponseDTO<Void> confirmAccount(@RequestParam("token") String token) {
-        userService.confirmUser(token);
-        return ResponseDTO.<Void>builder()
-                .status(HttpStatus.OK)
-                .message("Account confirmed successfully")
-                .build();
+    public ResponseDTO<String> confirmAccount(@RequestParam("token") String token) {
+        if (userService.confirmedUser(token)) {
+            return ResponseDTO.<String>builder()
+                    .status(HttpStatus.OK)
+                    .message("Account verified successfully")
+                    .build();
+        } else {
+            return ResponseDTO.<String>builder()
+                    .status(HttpStatus.OK)
+                    .message("Invalid token")
+                    .build();
+        }
     }
 
     @PostMapping("/register")
-    ResponseDTO<User> registerUser(@RequestBody @Valid UserRegistrationDTO registrationDTO) {
-        userService.registerUser(registrationDTO);
-        return ResponseDTO.<User>builder()
+    public ResponseDTO<String> registerUser(@RequestBody @Valid UserRegistrationDTO registrationDTO) {
+        return ResponseDTO.<String>builder()
                 .status(HttpStatus.CREATED)
-                .message(" A confirmation code has been sent to " + registrationDTO.getPhone())
+                .data(userService.registerUser(registrationDTO))
+                .build();
+    }
+
+    @PostMapping("/resend-confirmation")
+    public ResponseDTO<String> resendConfirmation(@RequestParam("email") String email) {
+        return ResponseDTO.<String>builder()
+                .status(HttpStatus.OK)
+                .data(userService.resendConfirmationEmail(email))
                 .build();
     }
 
     @PutMapping
-    ResponseDTO<Void> updateUser(@RequestBody @Valid UserDTO userDTO) {
+    public ResponseDTO<Void> updateUser(@RequestBody @Valid UserDTO userDTO) {
         userService.updateUser(userDTO);
         return ResponseDTO.<Void>builder()
                 .status(HttpStatus.OK)
@@ -66,7 +79,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseDTO<Void> deleteUser(@PathVariable Long id) {
+    public ResponseDTO<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUserById(id);
         return ResponseDTO.<Void>builder()
                 .status(HttpStatus.NO_CONTENT)
@@ -76,7 +89,7 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    ResponseDTO<UserDTO> getUserById(@PathVariable Long id) {
+    public ResponseDTO<UserDTO> getUserById(@PathVariable Long id) {
         return ResponseDTO.<UserDTO>builder()
                 .status(HttpStatus.OK)
                 .data(userService.getUserById(id))
@@ -84,7 +97,7 @@ public class UserController {
     }
 
     @GetMapping
-    ResponseDTO<List<UserDTO>> getAllUsers() {
+    public ResponseDTO<List<UserDTO>> getAllUsers() {
         return ResponseDTO.<List<UserDTO>>builder()
                 .status(HttpStatus.OK)
                 .data(userService.getAllUsers())
@@ -119,6 +132,47 @@ public class UserController {
                 .status(HttpStatus.OK)
                 .message("Password updated successfully")
                 .build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseDTO<String> forgotPassword(@RequestParam("email") String email) {
+        return ResponseDTO.<String>builder()
+                .status(HttpStatus.OK)
+                .data(userService.createPasswordResetTokenForUser(email))
+                .build();
+    }
+
+    @GetMapping("/reset-password")
+    public ResponseDTO<String> validateResetToken(@RequestParam("token") String token) {
+        String result = userService.validatePasswordResetToken(token);
+        if (result.equals("Valid token.")) {
+            return ResponseDTO.<String>builder()
+                    .status(HttpStatus.OK)
+                    .data(result)
+                    .build();
+        } else {
+            return ResponseDTO.<String>builder()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(result)
+                    .build();
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseDTO<String> resetPassword(@RequestParam("token") String token
+            , @RequestParam("newPassword") String newPassword) {
+        String result = userService.resetPassword(token, newPassword);
+        if (result.equals("Password reset successful.")) {
+            return ResponseDTO.<String>builder()
+                    .status(HttpStatus.OK)
+                    .data(result)
+                    .build();
+        } else {
+            return ResponseDTO.<String>builder()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(result)
+                    .build();
+        }
     }
 
 }

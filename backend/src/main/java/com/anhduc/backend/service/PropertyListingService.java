@@ -2,8 +2,10 @@ package com.anhduc.backend.service;
 
 import com.anhduc.backend.dto.PropertyListingDTO;
 import com.anhduc.backend.entity.PropertyListing;
+import com.anhduc.backend.entity.User;
 import com.anhduc.backend.exception.ResourceNotFoundException;
 import com.anhduc.backend.repository.PropertyListingRepository;
+import com.anhduc.backend.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,11 @@ public interface PropertyListingService {
 
     List<PropertyListingDTO> getPropertyListings();
     PropertyListingDTO getPropertyListingById(Long id);
-    PropertyListingDTO createPropertyListing(PropertyListingDTO propertyListingDTO);
+    PropertyListingDTO createPropertyListing(PropertyListingDTO propertyListingDTO, Long userId);
     PropertyListingDTO updatePropertyListing(Long id, PropertyListingDTO propertyListingDTO);
     void deletePropertyListing(Long id);
+    List<PropertyListingDTO> getPropertyListingsByUser(User user);
+    List<PropertyListingDTO> getPropertyListingsByUser(Long userId);
 
 }
 
@@ -27,6 +31,9 @@ class PropertyListingServiceImpl implements PropertyListingService {
 
     @Autowired
     private PropertyListingRepository propertyListingRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -52,8 +59,9 @@ class PropertyListingServiceImpl implements PropertyListingService {
 
     @Override
     @Transactional
-    public PropertyListingDTO createPropertyListing(PropertyListingDTO propertyListingDTO) {
+    public PropertyListingDTO createPropertyListing(PropertyListingDTO propertyListingDTO, Long userId) {
         PropertyListing propertyListing = modelMapper.map(propertyListingDTO, PropertyListing.class);
+        propertyListing.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Could not find user" + userId)));
         return modelMapper.map(propertyListingRepository.save(propertyListing), PropertyListingDTO.class);
     }
 
@@ -69,5 +77,18 @@ class PropertyListingServiceImpl implements PropertyListingService {
     @Transactional
     public void deletePropertyListing(Long id) {
         propertyListingRepository.deleteById(id);
+    }
+
+    @Override
+    public List<PropertyListingDTO> getPropertyListingsByUser(User user) {
+        return List.of();
+    }
+
+    @Override
+    public List<PropertyListingDTO> getPropertyListingsByUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Could not find user" + userId));
+        return propertyListingRepository.findByUser(user)
+                .stream().map(propertyListing -> modelMapper.map(propertyListing, PropertyListingDTO.class))
+                .collect(Collectors.toList());
     }
 }

@@ -62,11 +62,11 @@ public class SecurityConfig {
                     }
                 }).and() // Enable CORS globally
                 .authorizeRequests()
-                .requestMatchers("/api/users/register", "/api/users/confirm-account").permitAll()
-                .requestMatchers("/api/student/**")
-                .hasAuthority("STUDENT")
-                .requestMatchers("/api/landlord/**").hasAuthority("LANDLORD")
-                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+//                .requestMatchers("/api/users/register", "/api/users/confirm-account").permitAll()
+//                .requestMatchers("/api/student/**")
+//                .hasAuthority("STUDENT")
+//                .requestMatchers("/api/landlord/**").hasAuthority("LANDLORD")
+//                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                 .anyRequest().permitAll()
                 .and().sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .csrf(AbstractHttpConfigurer::disable);

@@ -2,14 +2,16 @@ package com.anhduc.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @Table(name = "users")
-public class User {
+public class User extends Auditable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,11 +53,9 @@ public class User {
 
     private Boolean confirmed = false;
 
-    private Boolean enabled = false;
-
     private Boolean addressVerified = false;
 
-    private LocalDateTime expiresAt;
+    private LocalDateTime confirmationSentAt; //time confirm email
 }
 
 enum Gender {

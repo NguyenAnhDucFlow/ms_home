@@ -1,22 +1,18 @@
 package com.anhduc.backend.jwt;
 
 
-import com.anhduc.backend.dto.UserDTO;
 import com.anhduc.backend.entity.User;
 import com.anhduc.backend.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.persistence.NoResultException;
-import lombok.Data;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class JwtTokenService {
@@ -32,8 +28,8 @@ public class JwtTokenService {
 
     private long validity = 60;
 
-    public TokenAndUser createToken(String phone){
-        Claims claims = Jwts.claims().setSubject(phone);
+    public TokenAndUser createToken(String email){
+        Claims claims = Jwts.claims().setSubject(email);
         Date now = new Date();
         Date exp = new Date(now.getTime() + validity * 60 * 1000);
 
@@ -42,7 +38,7 @@ public class JwtTokenService {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        User user = userRepository.findByPhone(phone).orElseThrow(() -> new NoResultException("User not found"));
+        User user = userRepository.findByPhone(email).orElseThrow(() -> new NoResultException("User not found"));
 
         return new TokenAndUser(token, user);
     }

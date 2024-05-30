@@ -18,8 +18,7 @@ public class UserDTO {
     private String gender;
     private Date birthdate;
     private Boolean confirmed;
-    private Boolean enabled;
     private Boolean addressVerified;
-    private LocalDateTime expiresAt;
+    private LocalDateTime confirmationSentAt;
 
 }
