@@ -1,13 +1,17 @@
 package com.anhduc.backend.service;
 
 import com.anhduc.backend.dto.PropertyListingDTO;
+import com.anhduc.backend.dto.PropertySearchCriteria;
 import com.anhduc.backend.entity.PropertyListing;
 import com.anhduc.backend.entity.User;
 import com.anhduc.backend.exception.ResourceNotFoundException;
 import com.anhduc.backend.repository.PropertyListingRepository;
 import com.anhduc.backend.repository.UserRepository;
+import com.anhduc.backend.specification.PropertyListingSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,7 @@ public interface PropertyListingService {
     void deletePropertyListing(Long id);
     List<PropertyListingDTO> getPropertyListingsByUser(User user);
     List<PropertyListingDTO> getPropertyListingsByUser(Long userId);
+    Page<PropertyListingDTO> searchListings(PropertySearchCriteria searchCriteria, Pageable pageable);
 
 }
 
@@ -90,5 +95,15 @@ class PropertyListingServiceImpl implements PropertyListingService {
         return propertyListingRepository.findByUser(user)
                 .stream().map(propertyListing -> modelMapper.map(propertyListing, PropertyListingDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<PropertyListingDTO> searchListings(PropertySearchCriteria searchCriteria, Pageable pageable) {
+        Page<PropertyListing> propertyListings =propertyListingRepository.findAll(new PropertyListingSpecification(searchCriteria), pageable);
+        return propertyListings.map(this::convertToDto);
+    }
+
+    private PropertyListingDTO convertToDto(PropertyListing propertyListing){
+        return modelMapper.map(propertyListing, PropertyListingDTO.class);
     }
 }

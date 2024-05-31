@@ -1,10 +1,12 @@
 package com.anhduc.backend.entity;
 
+import com.anhduc.backend.converter.AmenitiesConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -30,9 +32,10 @@ public class PropertyListing extends Auditable{
 
     @Column(nullable = false, length = 255)
     private String address;
-
-    @Column(columnDefinition = "JSON")
-    private String amenities;
+    @Enumerated(EnumType.STRING)
+    private RentalType typeOfRental;
+    @Convert(converter = AmenitiesConverter.class)
+    private List<String> amenities;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
