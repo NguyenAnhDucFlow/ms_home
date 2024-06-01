@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MsHome</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333333;
+        }
+        .email-container {
+            background-color: #ffffff;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #dddddd;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 100px;
+        }
+        .content {
+            line-height: 1.6;
+        }
+        .content a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .content a:hover {
+            text-decoration: underline;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #1a73e8;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .footer {
+            text-align: center;
+            border-top: 1px solid #dddddd;
+            padding-top: 20px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">
+        <img src="cid:logoImage" alt="Company Logo">
+        <h1>Welcome to Our Service!</h1>
+    </div>
+    <div class="content">
+        <p>Hello <span th:text="${name}"></span>,</p>
+        <p th:if="${emailType == 'confirmation'}" th:text="${content} + ' Please confirm your account by clicking the button below.'"></p>
+        <p th:if="${emailType == 'password_reset'}" th:text="${content} + ' Please reset your password by clicking the button below.'"></p>
+        <a th:href="${link}" class="button">Click Here</a>
+        <p>Best Regards,</p>
+        <p><em>mshome.id.vn</em></p>
+    </div>
+    <div class="footer">
+        <p>© 2024 MsHome. All rights reserved.</p>
+        <p>1234 Street Name, City, State, 12345</p>
+    </div>
+</div>
+</body>
+</html>

@@ -34,7 +34,7 @@ class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
         }
         User user = optionalUser.get();
         if (!user.getConfirmed()) {
-            throw new UsernameNotFoundException("User with email " + email + " has confirmed");
+            throw new UsernameNotFoundException("User with email " + email + " is not confirmed");
         }
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().name());
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPasswordHash(), Collections.singletonList(simpleGrantedAuthority));

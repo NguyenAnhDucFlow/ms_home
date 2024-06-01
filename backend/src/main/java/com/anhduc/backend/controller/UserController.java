@@ -22,17 +22,20 @@ import java.util.Optional;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    S3StorageService s3StorageService;
+    private final S3StorageService s3StorageService;
 
-    @Autowired
-    JwtTokenService jwtTokenService;
+    private final JwtTokenService jwtTokenService;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserController(UserService userService, S3StorageService s3StorageService, JwtTokenService jwtTokenService, UserRepository userRepository) {
+        this.userService = userService;
+        this.s3StorageService = s3StorageService;
+        this.jwtTokenService = jwtTokenService;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping("/confirm-account")
     public ResponseDTO<String> confirmAccount(@RequestParam("token") String token) {
@@ -50,23 +53,25 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseDTO<String> registerUser(@RequestBody @Valid UserRegistrationDTO registrationDTO) {
+    public ResponseDTO<String> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
+        String result = userService.registerUser(registrationDTO);
         return ResponseDTO.<String>builder()
-                .status(HttpStatus.CREATED)
-                .data(userService.registerUser(registrationDTO))
+                .status(result.contains("successful") ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
+                .data(result)
                 .build();
     }
 
     @PostMapping("/resend-confirmation")
     public ResponseDTO<String> resendConfirmation(@RequestParam("email") String email) {
+        String result = userService.resendConfirmationEmail(email);
         return ResponseDTO.<String>builder()
-                .status(HttpStatus.OK)
+                .status(result.contains("resent") ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
                 .data(userService.resendConfirmationEmail(email))
                 .build();
     }
 
     @PutMapping
-    public ResponseDTO<Void> updateUser(@RequestBody @Valid UserDTO userDTO) {
+    public ResponseDTO<Void> updateUser(@Valid @RequestBody UserDTO userDTO) {
         userService.updateUser(userDTO);
         return ResponseDTO.<Void>builder()
                 .status(HttpStatus.OK)
@@ -132,8 +137,9 @@ public class UserController {
 
     @PostMapping("/forgot-password")
     public ResponseDTO<String> forgotPassword(@RequestParam("email") String email) {
+        String result = userService.createPasswordResetTokenForUser(email);
         return ResponseDTO.<String>builder()
-                .status(HttpStatus.OK)
+                .status(result.contains("sent") ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
                 .data(userService.createPasswordResetTokenForUser(email))
                 .build();
     }
@@ -141,34 +147,20 @@ public class UserController {
     @GetMapping("/reset-password")
     public ResponseDTO<String> validateResetToken(@RequestParam("token") String token) {
         String result = userService.validatePasswordResetToken(token);
-        if (result.equals("Valid token.")) {
             return ResponseDTO.<String>builder()
-                    .status(HttpStatus.OK)
+                    .status(result.equals("Valid token.") ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
                     .data(result)
                     .build();
-        } else {
-            return ResponseDTO.<String>builder()
-                    .status(HttpStatus.BAD_REQUEST)
-                    .data(result)
-                    .build();
-        }
     }
 
     @PostMapping("/reset-password")
     public ResponseDTO<String> resetPassword(@RequestParam("token") String token
             , @RequestParam("newPassword") String newPassword) {
         String result = userService.resetPassword(token, newPassword);
-        if (result.equals("Password reset successful.")) {
             return ResponseDTO.<String>builder()
-                    .status(HttpStatus.OK)
+                    .status(result.equals("Password reset successful.") ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
                     .data(result)
                     .build();
-        } else {
-            return ResponseDTO.<String>builder()
-                    .status(HttpStatus.BAD_REQUEST)
-                    .data(result)
-                    .build();
-        }
     }
 
 }
