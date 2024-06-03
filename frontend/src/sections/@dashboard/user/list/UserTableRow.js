@@ -21,7 +21,7 @@ UserTableRow.propTypes = {
 export default function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { name, avatarUrl, company, role, isVerified, status } = row;
+  const { username, profilePicture, company, role, confirmed, status } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -40,26 +40,26 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
+        <Avatar alt={username} src={profilePicture} sx={{ mr: 2 }} />
         <Typography variant="subtitle2" noWrap>
-          {name}
+          {username}
         </Typography>
       </TableCell>
 
       <TableCell align="left">{company}</TableCell>
 
       <TableCell align="left" sx={{ textTransform: 'capitalize' }}>
-        {role}
+        {role.toLowerCase()}
       </TableCell>
 
       <TableCell align="center">
         <Iconify
-          icon={isVerified ? 'eva:checkmark-circle-fill' : 'eva:clock-outline'}
+          icon={confirmed ? 'eva:checkmark-circle-fill' : 'eva:clock-outline'}
           sx={{
             width: 20,
             height: 20,
             color: 'success.main',
-            ...(!isVerified && { color: 'warning.main' }),
+            ...(!confirmed && { color: 'warning.main' }),
           }}
         />
       </TableCell>
@@ -70,7 +70,7 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
           color={(status === 'banned' && 'error') || 'success'}
           sx={{ textTransform: 'capitalize' }}
         >
-          {status}
+          {status.toLowerCase()}
         </Label>
       </TableCell>
 

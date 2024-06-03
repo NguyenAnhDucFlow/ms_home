@@ -42,11 +42,17 @@ public class User extends Auditable{
     @Column(length = 255)
     private String address;
 
+    private String country;
+
+    private String state;
+
+    private String city;
+
+    private String about;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 6)
     private Gender gender;
-
-    private Date birthdate;
 
     @Column(length = 255)
     private String confirmationToken;

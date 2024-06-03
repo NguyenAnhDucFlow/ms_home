@@ -74,9 +74,8 @@ function AuthProvider({ children }) {
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
 
-          const response = await axios.get('/users/my-account');
+          const response = await axios.get('/api/users/my-account');
           const { user } = response.data.data;
-          console.log("userrrrrr", user)
 
           dispatch({
             type: 'INITIALIZE',
@@ -109,13 +108,13 @@ function AuthProvider({ children }) {
     initialize();
   }, []);
 
-  const login = async (phone, password) => {
-    const response = await axios.post('/login', {
-      phone,
+  const login = async (email, password) => {
+    const response = await axios.post('/api/login', {
+      email,
       password,
     });
-    console.log("response ....", response)
     const { accessToken, user } = response.data.data;
+    console.log(response.data)
 
     setSession(accessToken);
     dispatch({
@@ -126,10 +125,12 @@ function AuthProvider({ children }) {
     });
   };
 
-  const register = async (phone, password) => {
-    const response = await axios.post('/users/register', {
-      phone,
+  const register = async (email, password, firstName, lastName) => {
+    const response = await axios.post('/api/account/register', {
+      email,
       password,
+      firstName,
+      lastName,
     });
     const { accessToken, user } = response.data;
 

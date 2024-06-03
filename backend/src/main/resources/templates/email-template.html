@@ -68,8 +68,8 @@
     </div>
     <div class="content">
         <p>Hello <span th:text="${name}"></span>,</p>
-        <p th:if="${emailType == 'confirmation'}" th:text="${content} + ' Please confirm your account by clicking the button below.'"></p>
-        <p th:if="${emailType == 'password_reset'}" th:text="${content} + ' Please reset your password by clicking the button below.'"></p>
+        <p th:if="${emailType == 'CONFIRMATION'}" th:text="${content} + ' Please confirm your account by clicking the button below.'"></p>
+        <p th:if="${emailType == 'PASSWORD_RESET'}" th:text="${content} + ' Please reset your password by clicking the button below.'"></p>
         <a th:href="${link}" class="button">Click Here</a>
         <p>Best Regards,</p>
         <p><em>mshome.id.vn</em></p>

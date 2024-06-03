@@ -3,23 +3,22 @@ package com.anhduc.backend.controller;
 import com.anhduc.backend.dto.ResponseDTO;
 import com.anhduc.backend.dto.UserDTO;
 import com.anhduc.backend.dto.UserRegistrationDTO;
+import com.anhduc.backend.dto.UserUpdateDTO;
 import com.anhduc.backend.entity.User;
 import com.anhduc.backend.jwt.JwtTokenService;
 import com.anhduc.backend.repository.UserRepository;
 import com.anhduc.backend.service.S3StorageService;
 import com.anhduc.backend.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -30,11 +29,14 @@ public class UserController {
 
     private final UserRepository userRepository;
 
-    public UserController(UserService userService, S3StorageService s3StorageService, JwtTokenService jwtTokenService, UserRepository userRepository) {
+    private final ModelMapper modelMapper;
+
+    public UserController(UserService userService, S3StorageService s3StorageService, JwtTokenService jwtTokenService, UserRepository userRepository, ModelMapper modelMapper) {
         this.userService = userService;
         this.s3StorageService = s3StorageService;
         this.jwtTokenService = jwtTokenService;
         this.userRepository = userRepository;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/confirm-account")
@@ -71,8 +73,23 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseDTO<Void> updateUser(@Valid @RequestBody UserDTO userDTO) {
-        userService.updateUser(userDTO);
+    public ResponseDTO<Void> updateUser(@Valid @ModelAttribute UserUpdateDTO userUpdateDTO, @RequestHeader("Authorization") String token) throws IOException {
+        Long userId = jwtTokenService.getUserIdFromToken(token.replace("Bearer ", ""));
+
+        if (userUpdateDTO.getAvatarFile() != null && !userUpdateDTO.getAvatarFile().isEmpty()) {
+            String fileName = userUpdateDTO.getAvatarFile().getOriginalFilename();
+            if (fileName == null) {
+                throw new IllegalArgumentException("File name cannot be null");
+            }
+            String extension = fileName.substring(fileName.lastIndexOf("."));
+            String newFileName = UUID.randomUUID().toString() + extension;
+            String avatarUrl = s3StorageService.uploadFile(newFileName, userUpdateDTO.getAvatarFile());
+            userUpdateDTO.setProfilePicture(avatarUrl);
+        }
+
+        userUpdateDTO.setId(userId);
+        userService.updateUser(userUpdateDTO);
+
         return ResponseDTO.<Void>builder()
                 .status(HttpStatus.OK)
                 .message("User updated successfully")
@@ -105,26 +122,27 @@ public class UserController {
                 .build();
     }
 
-//    @GetMapping("/my-account")
-//    public ResponseDTO<Map<String, UserDTO>> getMyAccount(@RequestHeader("Authorization") String token) {
-//        String phone = jwtTokenService.getUsername(token.replace("Bearer ", ""));
-//        UserDTO user = convert(userRepository.findByPhone(phone));
-//        Map<String, UserDTO> userData = new HashMap<>();
-//        userData.put("user", user);
-//        return ResponseDTO.<Map<String, UserDTO>>builder()
-//                .status(HttpStatus.OK)
-//                .data(userData)
-//                .build();
-//    }
-
     @GetMapping("/my-account")
-    public ResponseDTO<Optional<User>> getMyAccount(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return ResponseDTO.<Optional<User>>builder()
+    public ResponseDTO<Map<String, UserDTO>> getMyAccount(@RequestHeader("Authorization") String token) {
+        String email = jwtTokenService.getEmailFromToken(token.replace("Bearer ", ""));
+        Optional<User> user = userRepository.findByEmail(email);
+        UserDTO userDTO = modelMapper.map(user.orElse(null), UserDTO.class);
+        Map<String, UserDTO> userData = new HashMap<>();
+        userData.put("user", userDTO);
+        return ResponseDTO.<Map<String, UserDTO>>builder()
                 .status(HttpStatus.OK)
-                .data(userRepository.findByPhone(userDetails.getUsername()))
+                .data(userData)
                 .build();
     }
+
+//    @GetMapping("/my-account")
+//    public ResponseDTO<Optional<User>> getMyAccount(Authentication authentication) {
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        return ResponseDTO.<Optional<User>>builder()
+//                .status(HttpStatus.OK)
+//                .data(userRepository.findByEmail(userDetails.getUsername()))
+//                .build();
+//    }
 
     @PutMapping("/{id}/password")
     public ResponseDTO<Void> updatePassword(@PathVariable Long id, @RequestBody String password) {

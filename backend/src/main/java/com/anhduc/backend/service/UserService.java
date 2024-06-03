@@ -3,6 +3,7 @@ package com.anhduc.backend.service;
 import com.anhduc.backend.dto.MessageDTO;
 import com.anhduc.backend.dto.UserDTO;
 import com.anhduc.backend.dto.UserRegistrationDTO;
+import com.anhduc.backend.dto.UserUpdateDTO;
 import com.anhduc.backend.entity.PasswordResetToken;
 import com.anhduc.backend.entity.User;
 import com.anhduc.backend.exception.ResourceNotFoundException;
@@ -29,7 +30,7 @@ public interface UserService {
     String registerUser(UserRegistrationDTO registrationDTO);
     List<UserDTO> getAllUsers();
     UserDTO getUserById(Long id);
-    void updateUser(UserDTO userDTO);
+    void updateUser(UserUpdateDTO userUpdateDTO);
     void deleteUserById(Long id);
     void updatePassword(Long id, String newPassword);
     boolean confirmedUser(String confirmationToken);
@@ -38,7 +39,6 @@ public interface UserService {
     String validatePasswordResetToken(String token);
     String resetPassword(String token, String newPassword);
     UserDTO getUserByEmail(String email);
-    boolean isUserEmailConfirmed(String email);
 }
 
 @Service
@@ -152,10 +152,10 @@ class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(UserDTO userDTO) {
-        logger.info("Updating user with id: {}", userDTO.getId());
-        User user = findUserById(userDTO.getId());
-        modelMapper.map(userDTO, user);
+    public void updateUser(UserUpdateDTO userUpdateDTO) {
+        logger.info("Updating user with id: {}", userUpdateDTO.getId());
+        User user = findUserById(userUpdateDTO.getId());
+        modelMapper.map(userUpdateDTO, user);
         userRepository.save(user);
     }
 
@@ -289,14 +289,6 @@ class UserServiceImpl implements UserService {
         logger.info("Fetching user by email: {}", email);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return modelMapper.map(user, UserDTO.class);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isUserEmailConfirmed(String email) {
-        logger.info("Checking if email is confirmed: {}", email);
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        return userOptional.isPresent() && userOptional.get().getConfirmed();
     }
 
     private MessageDTO createMessageDTO(User user, String subject, String message) {

@@ -31,7 +31,7 @@ export default function NavbarDocs() {
 
       <div>
         <Typography gutterBottom variant="subtitle1">
-          Hi, {user?.displayName}
+          Hi, {user?.username}
         </Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Need help?

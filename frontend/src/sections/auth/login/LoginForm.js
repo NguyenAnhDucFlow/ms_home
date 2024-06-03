@@ -1,43 +1,32 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-// form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-// @mui
 import { Link, Stack, Alert, IconButton, InputAdornment } from '@mui/material';
-import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import { LoadingButton } from '@mui/lab';
-// routes
 import { PATH_AUTH } from '../../../routes/paths';
-// hooks
 import useAuth from '../../../hooks/useAuth';
 import useIsMountedRef from '../../../hooks/useIsMountedRef';
-// components
 import Iconify from '../../../components/Iconify';
-import { FormProvider, RHFTextField, RHFCheckbox } from '../../../components/hook-form';
+import { FormProvider, RHFTextField } from '../../../components/hook-form';
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const { login } = useAuth();
-
   const isMountedRef = useIsMountedRef();
-
   const [showPassword, setShowPassword] = useState(false);
 
   const LoginSchema = Yup.object().shape({
-    phoneNumber: Yup.string()
-      .matches(/^[0-9]+$/, 'Phone number must be only digits')
-      .min(10, 'Phone number must be at least 10 digits')
-      .max(15, 'Phone number must be at most 15 digits')
-      .required('Phone number is required'),
-    password: Yup.string().required('Password is required'),
+    email: Yup.string().email('Email phải hợp lệ').required('Email là bắt buộc'),
+    password: Yup.string().required('Password là bắt buộc'),
   });
 
   const defaultValues = {
-    phoneNumber: '',
+    email: '',
     password: '',
     remember: true,
   };
@@ -56,12 +45,11 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     try {
-      await login(data.phoneNumber, data.password);
+      await login(data.email, data.password);
     } catch (error) {
-      console.error(error);
       reset();
       if (isMountedRef.current) {
-        setError('afterSubmit', { ...error, message: error.message });
+        setError('afterSubmit', { message: error.message });
       }
     }
   };
@@ -71,14 +59,17 @@ export default function LoginForm() {
       <Stack spacing={3}>
         {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
-        <RHFTextField name="phoneNumber" label="Số điện thoại"
+        <RHFTextField
+          name="email"
+          label="Email"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <PhoneIcon />
+                <EmailIcon />
               </InputAdornment>
-            )
-          }} />
+            ),
+          }}
+        />
 
         <RHFTextField
           name="password"
@@ -109,7 +100,6 @@ export default function LoginForm() {
           Quên mật khẩu
         </Link>
       </Stack>
-
     </FormProvider>
   );
 }
