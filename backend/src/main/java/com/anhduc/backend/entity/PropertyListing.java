@@ -4,6 +4,7 @@ import com.anhduc.backend.converter.AmenitiesConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.Cascade;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -50,7 +51,7 @@ public class PropertyListing extends Auditable {
 
     private String cover;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_id"))
     @Column(name = "image_url")
     private List<String> images;
@@ -62,6 +63,20 @@ public class PropertyListing extends Auditable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private VerificationStatus verificationStatus = VerificationStatus.PENDING;
+
+    private Integer rooms;
+
+    private Integer bathrooms;
+
+    @Column(length = 50)
+    private String dimensions;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal water;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal electricity;
+
 }
 
 enum VerificationStatus {

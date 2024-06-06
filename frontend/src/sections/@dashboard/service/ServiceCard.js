@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { Link as RouterLink } from 'react-router-dom';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import BedIcon from '@mui/icons-material/BedOutlined';
 import BathtubIcon from '@mui/icons-material/BathtubOutlined';
@@ -11,12 +12,10 @@ ServiceCard.propTypes = {
 };
 
 export default function ServiceCard({ dataCart }) {
-
-
-  const { name, cover, price, address } = dataCart;
+  const { name, rooms, cover, price, address, dimensions, bathrooms, id } = dataCart;
 
   return (
-    <Card sx={{ maxWidth: 345, borderRadius: 1 }}>
+    <Card component={RouterLink} to={`/property/${id}`} sx={{ maxWidth: 345, borderRadius: 1, textDecoration: 'none' }}>
       <Image alt={name} src={cover} ratio="4/3" />
       <Stack spacing={1} sx={{ p: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -33,11 +32,11 @@ export default function ServiceCard({ dataCart }) {
         <Divider sx={{ my: 1 }} />
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <BedIcon color='action' />
-          <Typography variant="caption" display="block">4 Phòng</Typography>
+          <Typography variant="caption" display="block">{rooms} Phòng</Typography>
           <BathtubIcon color='action' />
-          <Typography variant="caption" display="block">2 WC</Typography>
+          <Typography variant="caption" display="block">{bathrooms} WC</Typography>
           <SquareFootIcon color='action' />
-          <Typography variant="caption" display="block">68m²</Typography>
+          <Typography variant="caption" display="block">{dimensions}m²</Typography>
         </Box>
       </Stack>
     </Card>

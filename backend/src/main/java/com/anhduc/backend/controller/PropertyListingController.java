@@ -79,6 +79,13 @@ public class PropertyListingController {
                 .data(propertyListingService.getPropertyListingsByUser(userId))
                 .build();
     }
+    @GetMapping("/{id}")
+    public ResponseDTO<PropertyListingDTO> getPropertyListingById(@PathVariable Long id) {
+        return ResponseDTO.<PropertyListingDTO>builder()
+                .status(HttpStatus.OK)
+                .data(propertyListingService.getPropertyListingById(id))
+                .build();
+    }
 
     @GetMapping("/search")
     public ResponseDTO<Page<PropertyListingDTO>> searchProperties(

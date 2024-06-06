@@ -80,6 +80,11 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
     address: Yup.string().required('Address is mandatory'),
     propertyType: Yup.string().required('Property type is mandatory'),
     images: Yup.array().min(1, 'At least one image is required'),
+    rooms: Yup.number().min(1, 'At least one room is required').required('Number of rooms is mandatory'),
+    bathrooms: Yup.number().min(1, 'At least one bathroom is required').required('Number of bathrooms is mandatory'),
+    dimensions: Yup.string().required('Dimensions are mandatory'),
+    water: Yup.number().moreThan(0, 'Water value must be greater than zero').required('Water is mandatory'),
+    electricity: Yup.number().moreThan(0, 'Electricity value must be greater than zero').required('Electricity is mandatory'),
   });
 
   const defaultValues = useMemo(
@@ -94,6 +99,11 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
       amenities: currentProperty?.amenities || [],
       conditions: currentProperty?.conditions || '',
       images: currentProperty?.images || [],
+      rooms: currentProperty?.rooms || 1,
+      bathrooms: currentProperty?.bathrooms || 1,
+      dimensions: currentProperty?.dimensions || '',
+      water: currentProperty?.water || 0,
+      electricity: currentProperty?.electricity || 0,
     }),
     [currentProperty]
   );
@@ -281,6 +291,26 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
 
                   <FormItem>
                     <RHFTextField name="conditions" label="Conditions" />
+                  </FormItem>
+
+                  <FormItem>
+                    <RHFTextField name="rooms" label="Number of Rooms" type="number" />
+                  </FormItem>
+
+                  <FormItem>
+                    <RHFTextField name="bathrooms" label="Number of Bathrooms" type="number" />
+                  </FormItem>
+
+                  <FormItem>
+                    <RHFTextField name="dimensions" label="Dimensions (e.g., 6x8 m²)" />
+                  </FormItem>
+
+                  <FormItem>
+                    <RHFTextField name="water" label="Water (k)" type="number" />
+                  </FormItem>
+
+                  <FormItem>
+                    <RHFTextField name="electricity" label="Electricity (k)" type="number" />
                   </FormItem>
                 </AccordionDetails>
               </Accordion>

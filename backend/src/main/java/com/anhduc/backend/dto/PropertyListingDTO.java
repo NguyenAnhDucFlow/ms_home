@@ -54,4 +54,23 @@ public class PropertyListingDTO {
 
     @JsonIgnore
     private List<MultipartFile> multipartFile;
+
+    @NotNull(message = "Number of rooms is mandatory")
+    @Positive(message = "Number of rooms must be greater than zero")
+    private Integer rooms;
+
+    @NotNull(message = "Number of bathrooms is mandatory")
+    @Positive(message = "Number of bathrooms must be greater than zero")
+    private Integer bathrooms;
+
+    @NotBlank(message = "Dimensions are mandatory")
+    private String dimensions;
+
+    @NotNull(message = "Water is mandatory")
+    @Positive(message = "Water value must be greater than zero")
+    private BigDecimal water;
+
+    @NotNull(message = "Electricity is mandatory")
+    @Positive(message = "Electricity value must be greater than zero")
+    private BigDecimal electricity;
 }

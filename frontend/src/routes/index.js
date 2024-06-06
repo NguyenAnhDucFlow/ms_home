@@ -126,6 +126,7 @@ export default function Router() {
         { path: 'about-us', element: <About /> },
         { path: 'contact-us', element: <Contact /> },
         { path: 'faqs', element: <Faqs /> },
+        { path: 'property/:id', element: <EcommerceProductDetails /> }
       ],
     },
     { path: '*', element: <Navigate to="/404" replace /> },
