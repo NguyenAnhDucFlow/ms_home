@@ -99,7 +99,7 @@ export default function ProductDetailsCarousel({ product }) {
                 key={img}
                 alt="large image"
                 src={img}
-                ratio="1/1"
+                ratio="16/9"
                 onClick={() => handleOpenLightbox(img)}
                 sx={{ cursor: 'zoom-in' }}
               />
@@ -134,8 +134,7 @@ export default function ProductDetailsCarousel({ product }) {
               position: 'absolute',
               width: (THUMB_SIZE * 2) / 3,
               backgroundImage: (theme) =>
-                `linear-gradient(to left, ${alpha(theme.palette.background.paper, 0)} 0%, ${
-                  theme.palette.background.paper
+                `linear-gradient(to left, ${alpha(theme.palette.background.paper, 0)} 0%, ${theme.palette.background.paper
                 } 100%)`,
             },
             '&:after': { right: 0, transform: 'scaleX(-1)' },

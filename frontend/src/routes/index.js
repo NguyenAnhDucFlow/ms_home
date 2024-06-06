@@ -132,7 +132,6 @@ export default function Router() {
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);
 }
-
 // AUTHENTICATION
 const Login = Loadable(lazy(() => import('../pages/auth/Login')));
 const Register = Loadable(lazy(() => import('../pages/auth/Register')));
