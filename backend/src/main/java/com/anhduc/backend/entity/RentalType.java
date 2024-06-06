@@ -1,5 +1,5 @@
 package com.anhduc.backend.entity;
 
 public enum RentalType {
-    department
+    Apartment, House, Condo, Townhouse
 }

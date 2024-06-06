@@ -38,6 +38,7 @@ export const PATH_DASHBOARD = {
     ecommerce: path(ROOTS_DASHBOARD, '/ecommerce'),
     home: path(ROOTS_DASHBOARD, '/home'),
     new: path(ROOTS_DASHBOARD, '/new'),
+    list: path(ROOTS_DASHBOARD, '/list')
   },
   user: {
     root: path(ROOTS_DASHBOARD, '/user'),

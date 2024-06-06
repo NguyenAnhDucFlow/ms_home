@@ -1,17 +1,15 @@
-// @mui
 import { styled } from '@mui/material/styles';
 import { Box, Typography, Container, Grid, Button, useTheme } from '@mui/material';
 import Slider from 'react-slick';
 import { m } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 // components
 import Page from '../components/Page';
 import { MotionViewport, varFade } from '../components/animate';
-// sections
-import {
-  HomeHero,
-} from '../sections/home';
 import ServiceCard from '../sections/@dashboard/service/ServiceCard';
+import { HomeHero } from '../sections/home';
+import axios from '../utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -26,73 +24,24 @@ const ContentStyle = styled('div')(({ theme }) => ({
 }));
 
 // ----------------------------------------------------------------------
-const dataList = [
-  {
-    "id": "1",
-    "name": "test1",
-    "image": "https://image.luatvietnam.vn/uploaded/1200x675twebp/images/original/2022/09/05/mau-hop-dong-thue-tro-2022-1_0509150415.jpg",
-    "price": "4.000.000",
-    "address": "299, Liên Phường, phường Phú Hữu, TP.Thủ Đức",
-    "rooms": 4,
-    "WC": 2,
-    "size": "6x8 m²"
-  },
-  {
-    "id": "2",
-    "name": "test2",
-    "image": "https://image.luatvietnam.vn/uploaded/1200x675twebp/images/original/2022/09/05/mau-hop-dong-thue-tro-2022-1_0509150415.jpg",
-    "price": "5.000.000 VND/tháng",
-    "address": "300, Liên Phường, phường Phú Hữu, TP.Thủ Đức",
-    "rooms": 3,
-    "WC": 2,
-    "size": "5x7 m²"
-  },
-  {
-    "id": "2",
-    "name": "test2",
-    "image": "https://image.luatvietnam.vn/uploaded/1200x675twebp/images/original/2022/09/05/mau-hop-dong-thue-tro-2022-1_0509150415.jpg",
-    "price": "5.000.000 VND/tháng",
-    "address": "300, Liên Phường, phường Phú Hữu, TP.Thủ Đức",
-    "rooms": 3,
-    "WC": 2,
-    "size": "5x7 m²"
-  },
-  {
-    "id": "2",
-    "name": "test2",
-    "image": "https://image.luatvietnam.vn/uploaded/1200x675twebp/images/original/2022/09/05/mau-hop-dong-thue-tro-2022-1_0509150415.jpg",
-    "price": "5.000.000 VND/tháng",
-    "address": "300, Liên Phường, phường Phú Hữu, TP.Thủ Đức",
-    "rooms": 3,
-    "WC": 2,
-    "size": "5x7 m²"
-  },
-  {
-    "id": "2",
-    "name": "test2",
-    "image": "https://image.luatvietnam.vn/uploaded/1200x675twebp/images/original/2022/09/05/mau-hop-dong-thue-tro-2022-1_0509150415.jpg",
-    "price": "5.000.000 VND/tháng",
-    "address": "300, Liên Phường, phường Phú Hữu, TP.Thủ Đức",
-    "rooms": 3,
-    "WC": 2,
-    "size": "5x7 m²"
-  },
-  {
-    "id": "2",
-    "name": "test2",
-    "image": "https://image.luatvietnam.vn/uploaded/1200x675twebp/images/original/2022/09/05/mau-hop-dong-thue-tro-2022-1_0509150415.jpg",
-    "price": "5.000.000 VND/tháng",
-    "address": "300, Liên Phường, phường Phú Hữu, TP.Thủ Đức",
-    "rooms": 3,
-    "WC": 2,
-    "size": "5x7 m²"
-  },
-];
-
 
 export default function HomePage() {
-
+  const [dataList, setDataList] = useState([]);
   const theme = useTheme();
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axios.get('/api/listings');
+        setDataList(response.data.data);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
   return (
     <Page title="Home page">
       <RootStyle>
@@ -143,8 +92,6 @@ export default function HomePage() {
     </Page>
   );
 }
-
-
 
 function ServiceSlider({ services }) {
   const settings = {

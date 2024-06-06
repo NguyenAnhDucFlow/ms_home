@@ -13,11 +13,11 @@ ServiceCard.propTypes = {
 export default function ServiceCard({ dataCart }) {
 
 
-  const { name, image, price, address } = dataCart;
+  const { name, cover, price, address } = dataCart;
 
   return (
     <Card sx={{ maxWidth: 345, borderRadius: 1 }}>
-      <Image alt={name} src={image} ratio="4/3" />
+      <Image alt={name} src={cover} ratio="4/3" />
       <Stack spacing={1} sx={{ p: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" component="div" color="text.primary">

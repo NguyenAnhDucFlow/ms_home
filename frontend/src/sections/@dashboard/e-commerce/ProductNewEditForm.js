@@ -9,7 +9,20 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { styled } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
-import { Card, Chip, Grid, Stack, TextField, Typography, Autocomplete, InputAdornment } from '@mui/material';
+import {
+  Card,
+  Chip,
+  Grid,
+  Stack,
+  TextField,
+  Typography,
+  Autocomplete,
+  InputAdornment,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
@@ -22,31 +35,18 @@ import {
   RHFRadioGroup,
   RHFUploadMultiFile,
 } from '../../../components/hook-form';
-
+// API
+import axios from '../../../utils/axios';
 // ----------------------------------------------------------------------
 
-const GENDER_OPTION = ['Men', 'Women', 'Kids'];
+const PROPERTY_TYPE_OPTION = ['Apartment', 'House', 'Condo', 'Townhouse'];
 
-const CATEGORY_OPTION = [
-  { group: 'Clothing', classify: ['Shirts', 'T-shirts', 'Jeans', 'Leather'] },
-  { group: 'Tailored', classify: ['Suits', 'Blazers', 'Trousers', 'Waistcoats'] },
-  { group: 'Accessories', classify: ['Shoes', 'Backpacks and bags', 'Bracelets', 'Face masks'] },
-];
-
-const TAGS_OPTION = [
-  'Toy Story 3',
-  'Logan',
-  'Full Metal Jacket',
-  'Dangal',
-  'The Sting',
-  '2001: A Space Odyssey',
-  "Singin' in the Rain",
-  'Toy Story',
-  'Bicycle Thieves',
-  'The Kid',
-  'Inglourious Basterds',
-  'Snatch',
-  '3 Idiots',
+const AMENITIES_OPTION = [
+  'Air Conditioning',
+  'Swimming Pool',
+  'Garden',
+  'Garage',
+  'Fitness Center',
 ];
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
@@ -55,46 +55,51 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
 }));
 
+const FormItem = styled('div')(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+}));
+
 // ----------------------------------------------------------------------
 
-ProductNewEditForm.propTypes = {
+PropertyListingForm.propTypes = {
   isEdit: PropTypes.bool,
-  currentProduct: PropTypes.object,
+  currentProperty: PropTypes.object,
 };
 
-export default function ProductNewEditForm({ isEdit, currentProduct }) {
+export default function PropertyListingForm({ isEdit, currentProperty }) {
   const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const NewProductSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    description: Yup.string().required('Description is required'),
-    images: Yup.array().min(1, 'Images is required'),
-    price: Yup.number().moreThan(0, 'Price should not be $0.00'),
+  const PropertySchema = Yup.object().shape({
+    fullName: Yup.string().required('Full name is mandatory'),
+    phoneNumber: Yup.string().required('Phone number is mandatory').matches(/^\+?\d{10,15}$/, 'Invalid phone number'),
+    title: Yup.string().required('Title is mandatory'),
+    description: Yup.string().required('Description is mandatory'),
+    price: Yup.number().moreThan(0, 'Price must be greater than zero'),
+    address: Yup.string().required('Address is mandatory'),
+    propertyType: Yup.string().required('Property type is mandatory'),
+    images: Yup.array().min(1, 'At least one image is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentProduct?.name || '',
-      description: currentProduct?.description || '',
-      images: currentProduct?.images || [],
-      code: currentProduct?.code || '',
-      sku: currentProduct?.sku || '',
-      price: currentProduct?.price || 0,
-      priceSale: currentProduct?.priceSale || 0,
-      tags: currentProduct?.tags || [TAGS_OPTION[0]],
-      inStock: true,
-      taxes: true,
-      gender: currentProduct?.gender || GENDER_OPTION[2],
-      category: currentProduct?.category || CATEGORY_OPTION[0].classify[1],
+      fullName: currentProperty?.fullName || '',
+      phoneNumber: currentProperty?.phoneNumber || '',
+      title: currentProperty?.title || '',
+      description: currentProperty?.description || '',
+      price: currentProperty?.price || 0,
+      address: currentProperty?.address || '',
+      propertyType: currentProperty?.propertyType || PROPERTY_TYPE_OPTION[0],
+      amenities: currentProperty?.amenities || [],
+      conditions: currentProperty?.conditions || '',
+      images: currentProperty?.images || [],
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentProduct]
+    [currentProperty]
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewProductSchema),
+    resolver: yupResolver(PropertySchema),
     defaultValues,
   });
 
@@ -111,22 +116,37 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
   const values = watch();
 
   useEffect(() => {
-    if (isEdit && currentProduct) {
+    if (isEdit && currentProperty) {
       reset(defaultValues);
     }
     if (!isEdit) {
       reset(defaultValues);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEdit, currentProduct]);
+  }, [isEdit, currentProperty, reset, defaultValues]);
 
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
-      navigate(PATH_DASHBOARD.eCommerce.list);
+      const formData = new FormData();
+      Object.keys(data).forEach((key) => {
+        if (key === 'images') {
+          data.images.forEach((file) => {
+            formData.append('multipartFile', file);
+          });
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      if (isEdit) {
+        await axios.put(`/api/listings/${currentProperty.id}`, formData);
+        enqueueSnackbar('Update success!', { variant: 'success' });
+      } else {
+        await axios.post('/api/listings', formData);
+        enqueueSnackbar('Create success!', { variant: 'success' });
+      }
+      // navigate(PATH_DASHBOARD.realEstate.list);
     } catch (error) {
+      enqueueSnackbar('An error occurred. Please try again.', { variant: 'error' });
       console.error(error);
     }
   };
@@ -160,14 +180,24 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
         <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Stack spacing={3}>
-              <RHFTextField name="name" label="Product Name" />
+              <FormItem>
+                <RHFTextField name="fullName" label="Full Name" />
+              </FormItem>
 
-              <div>
+              <FormItem>
+                <RHFTextField name="phoneNumber" label="Phone Number" />
+              </FormItem>
+
+              <FormItem>
+                <RHFTextField name="title" label="Title" />
+              </FormItem>
+
+              <FormItem>
                 <LabelStyle>Description</LabelStyle>
                 <RHFEditor simple name="description" />
-              </div>
+              </FormItem>
 
-              <div>
+              <FormItem>
                 <LabelStyle>Images</LabelStyle>
                 <RHFUploadMultiFile
                   name="images"
@@ -178,7 +208,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
                   onRemove={handleRemove}
                   onRemoveAll={handleRemoveAll}
                 />
-              </div>
+              </FormItem>
             </Stack>
           </Card>
         </Grid>
@@ -186,91 +216,78 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
         <Grid item xs={12} md={4}>
           <Stack spacing={3}>
             <Card sx={{ p: 3 }}>
-              <RHFSwitch name="inStock" label="In stock" />
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography>Price & Address</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <FormItem>
+                    <RHFTextField
+                      name="price"
+                      label="Price"
+                      placeholder="0.00"
+                      value={getValues('price') === 0 ? '' : getValues('price')}
+                      onChange={(event) => setValue('price', Number(event.target.value))}
+                      InputLabelProps={{ shrink: true }}
+                      InputProps={{
+                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        type: 'number',
+                      }}
+                    />
+                  </FormItem>
 
-              <Stack spacing={3} mt={2}>
-                <RHFTextField name="code" label="Product Code" />
-                <RHFTextField name="sku" label="Product SKU" />
+                  <FormItem>
+                    <RHFTextField name="address" label="Address" />
+                  </FormItem>
+                </AccordionDetails>
+              </Accordion>
 
-                <div>
-                  <LabelStyle>Gender</LabelStyle>
-                  <RHFRadioGroup
-                    name="gender"
-                    options={GENDER_OPTION}
-                    sx={{
-                      '& .MuiFormControlLabel-root': { mr: 4 },
-                    }}
-                  />
-                </div>
-
-                <RHFSelect name="category" label="Category">
-                  {CATEGORY_OPTION.map((category) => (
-                    <optgroup key={category.group} label={category.group}>
-                      {category.classify.map((classify) => (
-                        <option key={classify} value={classify}>
-                          {classify}
+              <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography>Property Details</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <FormItem>
+                    <RHFSelect name="propertyType" label="Property Type">
+                      {PROPERTY_TYPE_OPTION.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
                         </option>
                       ))}
-                    </optgroup>
-                  ))}
-                </RHFSelect>
+                    </RHFSelect>
+                  </FormItem>
 
-                <Controller
-                  name="tags"
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      {...field}
-                      multiple
-                      freeSolo
-                      onChange={(event, newValue) => field.onChange(newValue)}
-                      options={TAGS_OPTION.map((option) => option)}
-                      renderTags={(value, getTagProps) =>
-                        value.map((option, index) => (
-                          <Chip {...getTagProps({ index })} key={option} size="small" label={option} />
-                        ))
-                      }
-                      renderInput={(params) => <TextField label="Tags" {...params} />}
+                  <FormItem>
+                    <Controller
+                      name="amenities"
+                      control={control}
+                      render={({ field }) => (
+                        <Autocomplete
+                          {...field}
+                          multiple
+                          freeSolo
+                          onChange={(event, newValue) => field.onChange(newValue)}
+                          options={AMENITIES_OPTION.map((option) => option)}
+                          renderTags={(value, getTagProps) =>
+                            value.map((option, index) => (
+                              <Chip {...getTagProps({ index })} key={option} size="small" label={option} />
+                            ))
+                          }
+                          renderInput={(params) => <TextField label="Amenities" {...params} />}
+                        />
+                      )}
                     />
-                  )}
-                />
-              </Stack>
-            </Card>
+                  </FormItem>
 
-            <Card sx={{ p: 3 }}>
-              <Stack spacing={3} mb={2}>
-                <RHFTextField
-                  name="price"
-                  label="Regular Price"
-                  placeholder="0.00"
-                  value={getValues('price') === 0 ? '' : getValues('price')}
-                  onChange={(event) => setValue('price', Number(event.target.value))}
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                    type: 'number',
-                  }}
-                />
-
-                <RHFTextField
-                  name="priceSale"
-                  label="Sale Price"
-                  placeholder="0.00"
-                  value={getValues('priceSale') === 0 ? '' : getValues('priceSale')}
-                  onChange={(event) => setValue('price', Number(event.target.value))}
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                    type: 'number',
-                  }}
-                />
-              </Stack>
-
-              <RHFSwitch name="taxes" label="Price includes taxes" />
+                  <FormItem>
+                    <RHFTextField name="conditions" label="Conditions" />
+                  </FormItem>
+                </AccordionDetails>
+              </Accordion>
             </Card>
 
             <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-              {!isEdit ? 'Create Product' : 'Save Changes'}
+              {!isEdit ? 'Create Listing' : 'Save Changes'}
             </LoadingButton>
           </Stack>
         </Grid>

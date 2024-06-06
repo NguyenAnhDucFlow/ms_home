@@ -8,16 +8,15 @@ import { useForm } from 'react-hook-form';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { styled } from '@mui/material/styles';
-import { Grid, Card, Stack, Button, Typography } from '@mui/material';
+import { Grid, Card, Stack, Button, Typography, TextField, MenuItem } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
-import { FormProvider, RHFTextField, RHFUploadSingleFile } from '../../../components/hook-form';
+import { FormProvider, RHFTextField, RHFUploadSingleFile, RHFSelect } from '../../../components/hook-form';
 //
 import BlogNewPostPreview from './BlogNewPostPreview';
 
 // ----------------------------------------------------------------------
-
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
   ...theme.typography.subtitle2,
@@ -51,6 +50,10 @@ export default function BlogNewPostForm() {
       .matches(phoneRegExp, 'Số điện thoại không hợp lệ.'),
     cover: Yup.mixed().required('Cover is required'),
     money: Yup.number().required('Vui lòng nhập số tiền đi.').typeError('Vui lòng nhập số tiền đi'),
+    propertyType: Yup.string().required('Vui lòng chọn loại bất động sản.'),
+    amenities: Yup.string(),
+    description: Yup.string().required('Vui lòng nhập mô tả chi tiết'),
+    conditions: Yup.string(),
   });
 
   const defaultValues = {
@@ -59,10 +62,13 @@ export default function BlogNewPostForm() {
     furniture: '',
     phoneNumber: '',
     fullName: '',
-    fullAddress: '',
     quantityOfRooms: '0',
     area: '',
     money: '',
+    propertyType: '',
+    amenities: '',
+    description: '',
+    conditions: '',
   };
 
   const methods = useForm({
@@ -108,7 +114,6 @@ export default function BlogNewPostForm() {
     [setValue]
   );
 
-
   return (
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -135,18 +140,31 @@ export default function BlogNewPostForm() {
                       fullWidth
                     />
                   </Grid>
-
                 </Grid>
 
-                <RHFTextField name="address" label="Địa chỉ" placeholder="VD: 29 Liên Phường, Phường Phú Hữu" />
-                <RHFTextField name="furniture" label="Nội thất (nếu có)" placeholder="VD: Máy lạnh, tủ lạnh" />
+                <RHFSelect
+                  name="propertyType"
+                  label="Loại bất động sản *"
+                  fullWidth
+                >
+                  <MenuItem value="apartment">Căn hộ</MenuItem>
+                  <MenuItem value="house">Nhà phố</MenuItem>
+                  <MenuItem value="villa">Biệt thự</MenuItem>
+                  <MenuItem value="land">Đất trống</MenuItem>
+                </RHFSelect>
 
-
-                <RHFTextField name="fullAddress" label="Vị trí" placeholder="Làng tăng phú ..." multiline rows={3} />
+                <RHFTextField name="address" label="Địa chỉ *" placeholder="VD: 29 Liên Phường, Phường Phú Hữu" fullWidth />
+                <RHFTextField name="furniture" label="Nội thất (nếu có)" placeholder="VD: Máy lạnh, tủ lạnh" fullWidth />
+                <RHFTextField name="amenities" label="Tiện ích" placeholder="VD: Hồ bơi, phòng gym" fullWidth />
+                <RHFTextField name="description" label="Mô tả chi tiết *" placeholder="Mô tả tổng quan về bất động sản" multiline rows={3} fullWidth />
+                <RHFTextField name="conditions" label="Điều kiện thuê" placeholder="Yêu cầu tiền đặt cọc, thời gian thuê tối thiểu, ..." multiline rows={3} fullWidth />
 
                 <div>
                   <LabelStyle>Cover</LabelStyle>
                   <RHFUploadSingleFile name="cover" accept="image/*" maxSize={3145728} onDrop={handleDrop} />
+                  <Typography variant="caption" color="textSecondary">
+                    (Dung lượng tối đa: 3MB, Định dạng: .jpg, .png)
+                  </Typography>
                 </div>
               </Stack>
             </Card>
@@ -155,7 +173,6 @@ export default function BlogNewPostForm() {
           <Grid item xs={12} md={4}>
             <Card sx={{ p: 3 }}>
               <Stack spacing={3}>
-
                 <RHFTextField
                   name='money'
                   id="outlined-required"
@@ -163,21 +180,18 @@ export default function BlogNewPostForm() {
                   placeholder="VD: 3000000"
                   fullWidth
                 />
-
                 <RHFTextField
                   name='quantityOfRooms'
                   label="Số lượng phòng"
                   type="number"
                   fullWidth
                 />
-
                 <RHFTextField
                   name='area'
                   label="Diện tích"
                   placeholder="VD: 75 mét vuông"
                   fullWidth
                 />
-
               </Stack>
             </Card>
 

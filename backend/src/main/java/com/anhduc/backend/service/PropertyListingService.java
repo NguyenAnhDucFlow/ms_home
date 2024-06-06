@@ -2,6 +2,7 @@ package com.anhduc.backend.service;
 
 import com.anhduc.backend.dto.PropertyListingDTO;
 import com.anhduc.backend.dto.PropertySearchCriteria;
+import com.anhduc.backend.entity.ListingStatus;
 import com.anhduc.backend.entity.PropertyListing;
 import com.anhduc.backend.entity.User;
 import com.anhduc.backend.exception.ResourceNotFoundException;
@@ -66,6 +67,7 @@ class PropertyListingServiceImpl implements PropertyListingService {
     @Transactional
     public PropertyListingDTO createPropertyListing(PropertyListingDTO propertyListingDTO, Long userId) {
         PropertyListing propertyListing = modelMapper.map(propertyListingDTO, PropertyListing.class);
+        propertyListing.setStatus(ListingStatus.AVAILABLE);
         propertyListing.setUser(userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Could not find user" + userId)));
         return modelMapper.map(propertyListingRepository.save(propertyListing), PropertyListingDTO.class);
     }

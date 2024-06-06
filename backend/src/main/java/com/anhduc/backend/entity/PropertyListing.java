@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "property_listings")
-public class PropertyListing extends Auditable{
+public class PropertyListing extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +20,12 @@ public class PropertyListing extends Auditable{
 
     @ManyToOne
     private User user;
+
+    @Column(nullable = false)
+    private String fullName;
+
+    @Column(nullable = false)
+    private String phoneNumber;
 
     @Column(nullable = false)
     private String title;
@@ -32,10 +38,22 @@ public class PropertyListing extends Auditable{
 
     @Column(nullable = false, length = 255)
     private String address;
+
     @Enumerated(EnumType.STRING)
-    private RentalType typeOfRental;
+    private RentalType propertyType;
+
     @Convert(converter = AmenitiesConverter.class)
     private List<String> amenities;
+
+    @Column(columnDefinition = "TEXT")
+    private String conditions;
+
+    private String cover;
+
+    @ElementCollection
+    @CollectionTable(name = "property_images", joinColumns = @JoinColumn(name = "property_id"))
+    @Column(name = "image_url")
+    private List<String> images;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
@@ -44,11 +62,6 @@ public class PropertyListing extends Auditable{
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private VerificationStatus verificationStatus = VerificationStatus.PENDING;
-
-}
-
-enum ListingStatus {
-    AVAILABLE, RENTED, INACTIVE
 }
 
 enum VerificationStatus {

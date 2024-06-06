@@ -66,7 +66,8 @@ export default function Router() {
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'home', element: <MsHome /> },
         { path: 'ecommerce', element: <GeneralEcommerce /> },
-        { path: 'new', element: <BlogNewPost /> },
+        { path: 'new', element: <EcommerceProductCreate /> },
+        { path: 'list', element: <EcommerceProductList /> },
         {
           path: 'e-commerce',
           children: [
