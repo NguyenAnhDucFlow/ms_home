@@ -1,49 +1,52 @@
-import { useEffect, useState } from 'react';
-import orderBy from 'lodash/orderBy';
+import React, { useEffect, useState } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 // @mui
 import { Container, Typography, Stack } from '@mui/material';
-// redux
-import { useDispatch, useSelector } from '../../redux/store';
-import { getProducts, filterProducts } from '../../redux/slices/product';
-// routes
-import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // components
 import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import { FormProvider } from '../../components/hook-form';
+import { PATH_DASHBOARD } from '../../routes/paths';
+import axios from '../../utils/axios';
 // sections
 import {
-  ShopTagFiltered,
-  ShopProductSort,
   ShopProductList,
-  ShopFilterSidebar,
   ShopProductSearch,
 } from '../../sections/@dashboard/e-commerce/shop';
-import CartWidget from '../../sections/@dashboard/e-commerce/CartWidget';
+import FilterBar from '../../sections/@dashboard/e-commerce/shop/FilterBar';
 
 // ----------------------------------------------------------------------
 
 export default function EcommerceShop() {
   const { themeStretch } = useSettings();
 
-  const dispatch = useDispatch();
-
   const [openFilter, setOpenFilter] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const { products, sortBy, filters } = useSelector((state) => state.product);
+  const [filters, setFilters] = useState({
+    priceMin: null,
+    priceMax: null,
+    address: '',
+    typeOfRental: '',
+    amenities: [],
+  });
 
-  const filteredProducts = applyFilter(products, sortBy, filters);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortDirection, setSortDirection] = useState('desc');
 
   const defaultValues = {
-    gender: filters.gender,
-    category: filters.category,
-    colors: filters.colors,
-    priceRange: filters.priceRange,
-    rating: filters.rating,
+    priceMin: filters.priceMin,
+    priceMax: filters.priceMax,
+    address: filters.address,
+    typeOfRental: filters.typeOfRental,
+    amenities: filters.amenities,
   };
 
   const methods = useForm({
@@ -51,23 +54,61 @@ export default function EcommerceShop() {
   });
 
   const { reset, watch, setValue } = methods;
-
   const values = watch();
 
   const isDefault =
-    !values.priceRange &&
-    !values.rating &&
-    values.gender.length === 0 &&
-    values.colors.length === 0 &&
-    values.category === 'All';
+    !values.priceMin &&
+    !values.priceMax &&
+    !values.address &&
+    !values.typeOfRental &&
+    values.amenities.length === 0;
+
+  const fetchProducts = async (filterParams) => {
+    setLoading(true);
+    try {
+      const response = await axios.get('/api/listings/search', {
+        params: {
+          ...filterParams,
+          page,
+          size,
+          sortBy,
+          sortDirection,
+        },
+      });
+      setProducts(response.data.data.content);
+      setTotalProducts(response.data.data.totalElements);
+    } catch (error) {
+      console.error('Failed to fetch products', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    dispatch(getProducts());
-  }, [dispatch]);
+    const filterParams = {
+      priceMin: filters.priceMin,
+      priceMax: filters.priceMax,
+      address: filters.address,
+      typeOfRental: filters.typeOfRental,
+      amenities: filters.amenities,
+    };
+    fetchProducts(filterParams);
+  }, [filters, page, size, sortBy, sortDirection]);
 
-  useEffect(() => {
-    dispatch(filterProducts(values));
-  }, [dispatch, values]);
+  const handleSearch = (data) => {
+    const { address, priceRange, typeOfRental } = data;
+    let priceMin = null;
+    let priceMax = null;
+    if (priceRange === 'below1000000') {
+      priceMax = 1000000;
+    } else if (priceRange === '1000000to5000000') {
+      priceMin = 1000000;
+      priceMax = 5000000;
+    } else if (priceRange === 'above5000000') {
+      priceMin = 5000000;
+    }
+    setFilters({ ...filters, address, priceMin, priceMax, typeOfRental });
+  };
 
   const handleOpenFilter = () => {
     setOpenFilter(true);
@@ -79,34 +120,24 @@ export default function EcommerceShop() {
 
   const handleResetFilter = () => {
     reset();
+    setFilters({
+      priceMin: null,
+      priceMax: null,
+      address: '',
+      typeOfRental: '',
+      amenities: [],
+    });
     handleCloseFilter();
   };
 
-  const handleRemoveGender = (value) => {
-    const newValue = filters.gender.filter((item) => item !== value);
-    setValue('gender', newValue);
-  };
-
-  const handleRemoveCategory = () => {
-    setValue('category', 'All');
-  };
-
-  const handleRemoveColor = (value) => {
-    const newValue = filters.colors.filter((item) => item !== value);
-    setValue('colors', newValue);
-  };
-
-  const handleRemovePrice = () => {
-    setValue('priceRange', '');
-  };
-
-  const handleRemoveRating = () => {
-    setValue('rating', '');
+  const handleRemoveFilter = (key) => {
+    setValue(key, defaultValues[key]);
+    setFilters((prev) => ({ ...prev, [key]: defaultValues[key] }));
   };
 
   return (
     <Page title="Ecommerce: Shop">
-      <Container maxWidth={themeStretch ? false : 'lg'}>
+      <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 15 }}>
         <HeaderBreadcrumbs
           heading="Shop"
           links={[
@@ -119,105 +150,24 @@ export default function EcommerceShop() {
           ]}
         />
 
-        <Stack
-          spacing={2}
-          direction={{ xs: 'column', sm: 'row' }}
-          alignItems={{ sm: 'center' }}
-          justifyContent="space-between"
-          sx={{ mb: 2 }}
-        >
+        <Stack direction='row' justifyContent='space-between'>
           <ShopProductSearch />
-
-          <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-            <FormProvider methods={methods}>
-              <ShopFilterSidebar
-                onResetAll={handleResetFilter}
-                isOpen={openFilter}
-                onOpen={handleOpenFilter}
-                onClose={handleCloseFilter}
-              />
-            </FormProvider>
-
-            <ShopProductSort />
-          </Stack>
+          <FilterBar onSearch={handleSearch} />
         </Stack>
 
         <Stack sx={{ mb: 3 }}>
           {!isDefault && (
             <>
               <Typography variant="body2" gutterBottom>
-                <strong>{filteredProducts.length}</strong>
+                <strong>{totalProducts}</strong>
                 &nbsp;Products found
               </Typography>
-
-              <ShopTagFiltered
-                filters={filters}
-                isShowReset={!isDefault && !openFilter}
-                onRemoveGender={handleRemoveGender}
-                onRemoveCategory={handleRemoveCategory}
-                onRemoveColor={handleRemoveColor}
-                onRemovePrice={handleRemovePrice}
-                onRemoveRating={handleRemoveRating}
-                onResetAll={handleResetFilter}
-              />
             </>
           )}
         </Stack>
 
-        <ShopProductList products={filteredProducts} loading={!products.length && isDefault} />
-        <CartWidget />
+        <ShopProductList products={products} loading={loading} />
       </Container>
-    </Page>
+    </Page >
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applyFilter(products, sortBy, filters) {
-  // SORT BY
-  if (sortBy === 'featured') {
-    products = orderBy(products, ['sold'], ['desc']);
-  }
-  if (sortBy === 'newest') {
-    products = orderBy(products, ['createdAt'], ['desc']);
-  }
-  if (sortBy === 'priceDesc') {
-    products = orderBy(products, ['price'], ['desc']);
-  }
-  if (sortBy === 'priceAsc') {
-    products = orderBy(products, ['price'], ['asc']);
-  }
-  // FILTER PRODUCTS
-  if (filters.gender.length > 0) {
-    products = products.filter((product) => filters.gender.includes(product.gender));
-  }
-  if (filters.category !== 'All') {
-    products = products.filter((product) => product.category === filters.category);
-  }
-  if (filters.colors.length > 0) {
-    products = products.filter((product) => product.colors.some((color) => filters.colors.includes(color)));
-  }
-  if (filters.priceRange) {
-    products = products.filter((product) => {
-      if (filters.priceRange === 'below') {
-        return product.price < 25;
-      }
-      if (filters.priceRange === 'between') {
-        return product.price >= 25 && product.price <= 75;
-      }
-      return product.price > 75;
-    });
-  }
-  if (filters.rating) {
-    products = products.filter((product) => {
-      const convertRating = (value) => {
-        if (value === 'up4Star') return 4;
-        if (value === 'up3Star') return 3;
-        if (value === 'up2Star') return 2;
-        return 1;
-      };
-      return product.totalRating > convertRating(filters.rating);
-    });
-  }
-  return products;
 }

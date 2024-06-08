@@ -5,6 +5,7 @@ import com.anhduc.backend.dto.PropertySearchCriteria;
 import com.anhduc.backend.entity.ListingStatus;
 import com.anhduc.backend.entity.PropertyListing;
 import com.anhduc.backend.entity.User;
+import com.anhduc.backend.entity.VerificationStatus;
 import com.anhduc.backend.exception.ResourceNotFoundException;
 import com.anhduc.backend.repository.PropertyListingRepository;
 import com.anhduc.backend.repository.UserRepository;
@@ -12,6 +13,7 @@ import com.anhduc.backend.specification.PropertyListingSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +31,7 @@ public interface PropertyListingService {
     List<PropertyListingDTO> getPropertyListingsByUser(User user);
     List<PropertyListingDTO> getPropertyListingsByUser(Long userId);
     Page<PropertyListingDTO> searchListings(PropertySearchCriteria searchCriteria, Pageable pageable);
-
+    List<PropertyListingDTO> getTop8ListingByStatus(VerificationStatus verificationStatus);
 }
 
 @Service
@@ -92,6 +94,7 @@ class PropertyListingServiceImpl implements PropertyListingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PropertyListingDTO> getPropertyListingsByUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Could not find user" + userId));
         return propertyListingRepository.findByUser(user)
@@ -100,9 +103,19 @@ class PropertyListingServiceImpl implements PropertyListingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<PropertyListingDTO> searchListings(PropertySearchCriteria searchCriteria, Pageable pageable) {
         Page<PropertyListing> propertyListings =propertyListingRepository.findAll(new PropertyListingSpecification(searchCriteria), pageable);
         return propertyListings.map(this::convertToDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PropertyListingDTO> getTop8ListingByStatus(VerificationStatus verificationStatus) {
+        Pageable pageable = PageRequest.of(0, 8);
+        return propertyListingRepository.findTop8ByStatusOrderByCreatedAtDesc(verificationStatus, pageable)
+                .stream().map(propertyListing -> modelMapper.map(propertyListing, PropertyListingDTO.class))
+                .collect(Collectors.toList());
     }
 
     private PropertyListingDTO convertToDto(PropertyListing propertyListing){

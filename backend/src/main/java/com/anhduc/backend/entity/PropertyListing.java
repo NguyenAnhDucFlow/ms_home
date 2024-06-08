@@ -79,6 +79,3 @@ public class PropertyListing extends Auditable {
 
 }
 
-enum VerificationStatus {
-    PENDING, VERIFIED, REJECTED
-}

@@ -2,6 +2,7 @@ package com.anhduc.backend.dto;
 
 import com.anhduc.backend.entity.ListingStatus;
 import com.anhduc.backend.entity.RentalType;
+import com.anhduc.backend.entity.VerificationStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -51,6 +52,8 @@ public class PropertyListingDTO {
     private List<String> images;
 
     private ListingStatus status;
+
+    private VerificationStatus verificationStatus;
 
     @JsonIgnore
     private List<MultipartFile> multipartFile;

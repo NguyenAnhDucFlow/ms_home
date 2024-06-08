@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 // components
 import { SkeletonProductItem } from '../../../../components/skeleton';
 //
-import ShopProductCard from './ShopProductCard';
+import ServiceCard from '../../service/ServiceCard';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ export default function ShopProductList({ products, loading }) {
       }}
     >
       {(loading ? [...Array(12)] : products).map((product, index) =>
-        product ? <ShopProductCard key={product.id} product={product} /> : <SkeletonProductItem key={index} />
+        product ? <ServiceCard key={product.id} dataCart={product} /> : <SkeletonProductItem key={index} />
       )}
     </Box>
   );

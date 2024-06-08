@@ -56,20 +56,34 @@ export default function AccountGeneral() {
   });
 
   const {
+    getValues,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
-  const updateUser = async (data) => {
+  const onSubmit = async () => {
     try {
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-      if (data.profilePicture && data.profilePicture.length) {
-        formData.append('avatarFile', data.profilePicture[0]);
+
+      // Append each field individually
+      formData.append('id', user.id);
+      formData.append('username', getValues('username'));
+      formData.append('email', getValues('email'));
+      const photoFile = getValues('profilePicture');
+      if (typeof photoFile !== "string") {
+        formData.append('avatarFile', photoFile);
+      } else {
+        formData.append('profilePicture', photoFile);
       }
+      formData.append('phone', getValues('phone'));
+      formData.append('country', getValues('country'));
+      formData.append('address', getValues('address'));
+      formData.append('state', getValues('state'));
+      formData.append('city', getValues('city'));
+      formData.append('about', getValues('about'));
+      formData.append('isPublic', getValues('isPublic'));
+      formData.append('gender', getValues('gender'));
 
       const response = await axios.put('/api/users', formData, {
         headers: {
@@ -82,11 +96,6 @@ export default function AccountGeneral() {
       console.error(error);
       enqueueSnackbar('Update failed', { variant: 'error' });
     }
-  };
-
-
-  const onSubmit = async (data) => {
-    await updateUser(data);
   };
 
   const handleDrop = useCallback(
@@ -147,7 +156,7 @@ export default function AccountGeneral() {
               }}
             >
               <RHFTextField name="username" label="Username" />
-              <RHFTextField name="email" label="Email Address" />
+              <RHFTextField name="email" label="Email Address" disabled />
 
               <RHFTextField name="phone" label="Phone Number" />
               <RHFTextField name="address" label="Address" />

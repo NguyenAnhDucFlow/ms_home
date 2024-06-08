@@ -126,7 +126,9 @@ export default function Router() {
         { path: 'about-us', element: <About /> },
         { path: 'contact-us', element: <Contact /> },
         { path: 'faqs', element: <Faqs /> },
-        { path: 'property/:id', element: <EcommerceProductDetails /> }
+        { path: 'property/:id', element: <EcommerceProductDetails /> },
+        { path: 'properties', element: <EcommerceShop /> },
+        { path: 'dichvu', element: <DichVu /> }
       ],
     },
     { path: '*', element: <Navigate to="/404" replace /> },
@@ -144,6 +146,7 @@ const VerifyCode = Loadable(lazy(() => import('../pages/auth/VerifyCode')));
 const GeneralEcommerce = Loadable(lazy(() => import('../pages/dashboard/GeneralEcommerce')));
 const MsHome = Loadable(lazy(() => import('../pages/dashboard/MsHome')));
 const BlogNewPost = Loadable(lazy(() => import('../pages/dashboard/BlogNewPost')));
+const DichVu = Loadable(lazy(() => import('../sections/@dashboard/service/HomePage')))
 
 // ECOMMERCE
 const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));

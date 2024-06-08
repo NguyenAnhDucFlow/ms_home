@@ -32,7 +32,7 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('/api/listings');
+        const response = await axios.get('/api/listings/top8/PENDING');
         setDataList(response.data.data);
       } catch (error) {
         console.error('Failed to fetch data:', error);

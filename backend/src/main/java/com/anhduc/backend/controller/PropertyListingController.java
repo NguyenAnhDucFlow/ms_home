@@ -3,8 +3,8 @@ package com.anhduc.backend.controller;
 import com.anhduc.backend.dto.PropertyListingDTO;
 import com.anhduc.backend.dto.PropertySearchCriteria;
 import com.anhduc.backend.dto.ResponseDTO;
-import com.anhduc.backend.dto.UserDTO;
 import com.anhduc.backend.entity.RentalType;
+import com.anhduc.backend.entity.VerificationStatus;
 import com.anhduc.backend.jwt.JwtTokenService;
 import com.anhduc.backend.service.PropertyListingService;
 import com.anhduc.backend.service.S3StorageService;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -114,6 +113,14 @@ public class PropertyListingController {
         return ResponseDTO.<Page<PropertyListingDTO>>builder()
                 .status(HttpStatus.OK)
                 .data(result)
+                .build();
+    }
+
+    @GetMapping("/top8/{verificationStatus}")
+    public ResponseDTO<List<PropertyListingDTO>> getTop8Listings(@PathVariable VerificationStatus verificationStatus ) {
+        return ResponseDTO.<List<PropertyListingDTO>>builder()
+                .status(HttpStatus.OK)
+                .data(propertyListingService.getTop8ListingByStatus(verificationStatus))
                 .build();
     }
 
