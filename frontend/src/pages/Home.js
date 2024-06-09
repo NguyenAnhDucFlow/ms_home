@@ -53,7 +53,7 @@ export default function HomePage() {
                 <Typography variant="h4" sx={{ color: theme.palette.secondary.main }}>
                   Dựa trên tìm kiếm của bạn
                 </Typography>
-                <Button variant="contained" size='small' sx={{ mr: 2 }}>Tìm kiếm những nhà thuê khác</Button>
+                <Button variant="contained" size='small' sx={{ mr: 2 }} href='/chothue'>Tìm kiếm những nhà thuê khác</Button>
               </Box>
             </m.div>
 
@@ -86,6 +86,39 @@ export default function HomePage() {
 
             <ServiceSlider services={dataList} />
 
+          </Container>
+          <Container component={MotionViewport} sx={{ marginTop: '30px', mb: 10 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={12} lg={12} >
+                <Typography variant="h4" gutterBottom>
+                  Đối tác của MsHome
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
+                    <img src="/image/fpt-logo.jpg" alt="Đại học FPT" style={{ width: '10%', height: 'auto', display: 'inline' }} />
+                    <span style={{ marginLeft: '5px' }}>Đại học FPT</span>
+                  </Grid>
+                  <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
+                    <img src="/image/dh-quoc-gia-logo.jpg" alt="Đại học Quốc Gia" style={{ width: '10%', height: 'auto' }} />
+                    <span style={{ marginLeft: '5px' }}>Đại học Quốc Gia <br /> TH.HCM</span>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                <Typography variant="h4" gutterBottom>
+                  Chúng tôi sẵn sàng hỗ trợ bạn
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  Khi có bất kỳ thắc mắc, bạn chỉ cần chạm nhẹ, chúng tôi sẽ giải đáp cho bạn.
+                </Typography>
+                <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+                  Nhận hỗ trợ
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6} md={6} lg={6}>
+                <img src="/image/support-image.jpg" alt="Hỗ trợ" style={{ width: '70%', height: 'auto', marginTop: '20px' }} />
+              </Grid>
+            </Grid>
           </Container>
         </ContentStyle>
       </RootStyle>

@@ -2,7 +2,7 @@ import { m } from 'framer-motion';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Button, Box, Link, Container, Typography, Stack, TextField, MenuItem, Divider, Paper, InputBase, InputAdornment } from '@mui/material';
+import { Button, Box, Link, Container, Typography, Stack, Grid, TextField, MenuItem, Divider, Paper, InputBase, InputAdornment } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import HomeIcon from '@mui/icons-material/Home';
 // routes
@@ -101,22 +101,23 @@ export default function HomeHero() {
 
             <SearchBar />
 
-            <Stack spacing={2.5}>
+            <Stack spacing={2}>
               <m.div variants={varFade().inRight}>
                 <Typography variant='h5' sx={{ color: '#445a63' }}>
                   Our Partnership
                 </Typography>
               </m.div>
 
-              <Stack direction="row" spacing={1.5} justifyContent={{ xs: 'center', md: 'flex-start' }}>
-                {['ic_sketch', 'ic_figma', 'ic_js', 'ic_ts', 'ic_nextjs'].map((resource) => (
-                  <m.img
-                    key={resource}
-                    variants={varFade().inRight}
-                    src={`https://minimal-assets-api.vercel.app/assets/images/home/${resource}.svg`}
-                  />
-                ))}
-              </Stack>
+              <Grid container spacing={2}>
+                <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <img src="/image/fpt-logo.jpg" alt="Đại học FPT" style={{ width: '10%', height: 'auto', display: 'inline' }} />
+                  <span style={{ marginLeft: '5px' }}>Đại học FPT</span>
+                </Grid>
+                <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <img src="/image/dh-quoc-gia-logo.jpg" alt="Đại học Quốc Gia" style={{ width: '10%', height: 'auto' }} />
+                  <span style={{ marginLeft: '5px' }}>Đại học Quốc Gia <br /> TH.HCM</span>
+                </Grid>
+              </Grid>
             </Stack>
           </ContentStyle>
         </Container>

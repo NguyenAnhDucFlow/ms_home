@@ -19,12 +19,12 @@ const menuConfig = [
   {
     title: 'Cho thuê',
     icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
-    path: PATH_PAGE.about,
+    path: 'chothue',
   },
   {
     title: 'Dịch vụ',
     icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
-    path: PATH_PAGE.about,
+    path: 'dichvu',
   },
   {
     title: 'Cộng đồng',

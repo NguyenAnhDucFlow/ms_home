@@ -127,7 +127,7 @@ export default function Router() {
         { path: 'contact-us', element: <Contact /> },
         { path: 'faqs', element: <Faqs /> },
         { path: 'property/:id', element: <EcommerceProductDetails /> },
-        { path: 'properties', element: <EcommerceShop /> },
+        { path: 'chothue', element: <EcommerceShop /> },
         { path: 'dichvu', element: <DichVu /> }
       ],
     },
