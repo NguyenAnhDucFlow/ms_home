@@ -27,11 +27,6 @@ const menuConfig = [
     path: 'dichvu',
   },
   {
-    title: 'Cộng đồng',
-    icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
-    path: PATH_PAGE.about,
-  },
-  {
     title: 'Hỗ trợ',
     icon: <Iconify icon={'eva:home-fill'} {...ICON_SIZE} />,
     path: PATH_PAGE.faqs

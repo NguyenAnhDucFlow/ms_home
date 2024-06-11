@@ -13,15 +13,15 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 const services = [
     {
         title: 'Vệ sinh đồ điện lạnh',
-        image: '/path/to/image1.png',
+        image: '/image/dv don dep.png',
     },
     {
         title: 'Chuyển nhà',
-        image: '/path/to/image2.png',
+        image: '/image/dv van chuyen.png',
     },
     {
         title: 'Dọn dẹp nhà',
-        image: '/path/to/image3.png',
+        image: '/image/dv don dep.png',
     },
 ];
 
