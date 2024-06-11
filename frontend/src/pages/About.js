@@ -40,7 +40,7 @@ export default function About() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                <img src="" alt="MsHome Logo" style={{ maxWidth: '100%', height: 'auto' }} />
+                <img src="/image/EXE-logo.png" alt="MsHome Logo" style={{ maxWidth: '100%', height: 'auto' }} />
               </Box>
             </Grid>
           </Grid>
@@ -48,7 +48,7 @@ export default function About() {
           <Grid container spacing={4} sx={{ mt: 4 }}>
             <Grid item xs={12} md={6}>
               <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                <img src="<path_to_your_map_image>" alt="Map" style={{ maxWidth: '100%', height: 'auto' }} />
+                <img src="/image/EXE-map.png" alt="Map" style={{ maxWidth: '100%', height: 'auto' }} />
               </Box>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -75,7 +75,7 @@ export default function About() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                <img src="path_to_your_vision_image" alt="Vision" style={{ maxWidth: '100%', height: 'auto' }} />
+                <img src="/image/EXE-vision.png" alt="Vision" style={{ maxWidth: '100%', height: 'auto' }} />
               </Box>
             </Grid>
           </Grid>
@@ -97,7 +97,7 @@ export default function About() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                <img src="path_to_your_mission_image" alt="Mission" style={{ maxWidth: '100%', height: 'auto' }} />
+                <img src="/image/EXE-vision.png" alt="Mission" style={{ maxWidth: '100%', height: 'auto' }} />
               </Box>
             </Grid>
           </Grid>
@@ -109,9 +109,9 @@ export default function About() {
             <Grid container spacing={4}>
               <Grid item xs={12} md={3}>
                 <Box className="frame-38" textAlign="center">
-                  <Box className="sketch-logo" mb={2}>
+                  {/* <Box className="sketch-logo" mb={2}>
                     <img className="vector" src="assets/vectors/Vector410_x2.svg" alt="Chất lượng" />
-                  </Box>
+                  </Box> */}
                   <Typography variant="h6" component="h3" gutterBottom>
                     Chất lượng
                   </Typography>
@@ -123,9 +123,9 @@ export default function About() {
               </Grid>
               <Grid item xs={12} md={3}>
                 <Box className="frame-40" textAlign="center">
-                  <Box className="sketch-logo-1" mb={2}>
+                  {/* <Box className="sketch-logo-1" mb={2}>
                     <img className="vector-1" src="assets/vectors/Vector347_x2.svg" alt="Tận tâm" />
-                  </Box>
+                  </Box> */}
                   <Typography variant="h6" component="h3" gutterBottom>
                     Tận tâm
                   </Typography>
@@ -137,9 +137,9 @@ export default function About() {
               </Grid>
               <Grid item xs={12} md={3}>
                 <Box className="frame-41" textAlign="center">
-                  <Box className="sketch-logo-2" mb={2}>
+                  {/* <Box className="sketch-logo-2" mb={2}>
                     <img className="vector-2" src="assets/vectors/Vector113_x2.svg" alt="Tiện lợi" />
-                  </Box>
+                  </Box> */}
                   <Typography variant="h6" component="h3" gutterBottom>
                     Tiện lợi
                   </Typography>
@@ -151,9 +151,9 @@ export default function About() {
               </Grid>
               <Grid item xs={12} md={3}>
                 <Box className="frame-42" textAlign="center">
-                  <Box className="sketch-logo-3" mb={2}>
+                  {/* <Box className="sketch-logo-3" mb={2}>
                     <img className="vector-3" src="assets/vectors/Vector57_x2.svg" alt="Tử tế" />
-                  </Box>
+                  </Box> */}
                   <Typography variant="h6" component="h3" gutterBottom>
                     Tử tế
                   </Typography>
@@ -166,7 +166,7 @@ export default function About() {
             </Grid>
           </Box>
 
-          <Box sx={{ mt: 4 }}>
+          {/* <Box sx={{ mt: 4 }}>
             <Typography variant="h4" component="h2" gutterBottom>
               Đối tác của MsHome
             </Typography>
@@ -199,7 +199,7 @@ export default function About() {
                 </Box>
               </Grid>
             </Grid>
-          </Box>
+          </Box> */}
 
           {/* Support Section */}
           <Box sx={{ mt: 4 }}>
