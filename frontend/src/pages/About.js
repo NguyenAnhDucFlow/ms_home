@@ -203,9 +203,6 @@ export default function About() {
 
           {/* Support Section */}
           <Box sx={{ mt: 4 }}>
-            <Typography variant="h4" component="h2" gutterBottom>
-              Chúng tôi sẵn sàng hỗ trợ bạn
-            </Typography>
             <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
                 <Typography variant="h5" component="h3" gutterBottom>

@@ -136,17 +136,16 @@ export default function EcommerceShop() {
   };
 
   return (
-    <Page title="Ecommerce: Shop">
+    <Page title="Cho thuê">
       <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 15 }}>
         <HeaderBreadcrumbs
-          heading="Shop"
+          heading="Cho thuê"
           links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
             {
-              name: 'E-Commerce',
-              href: PATH_DASHBOARD.eCommerce.root,
+              name: 'Trang chủ',
+              href: '/',
             },
-            { name: 'Shop' },
+            { name: 'Cho thuê' },
           ]}
         />
 

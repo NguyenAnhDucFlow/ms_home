@@ -12,10 +12,15 @@ GuestGuard.propTypes = {
 };
 
 export default function GuestGuard({ children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   if (isAuthenticated) {
-    return <Navigate to={PATH_DASHBOARD.root} />;
+    if (user.role === 'STUDENT') {
+      return <Navigate to={'/'} />;
+    }
+    if (user.role === 'ADMIN' || user.role === 'LANDLORD') {
+      return <Navigate to={PATH_DASHBOARD.root} />;
+    }
   }
 
   return <>{children}</>;

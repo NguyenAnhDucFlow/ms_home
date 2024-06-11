@@ -2,8 +2,10 @@ import { sentenceCase } from 'change-case';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Tab, Card, Grid, Divider, Container, Typography, Button, IconButton, Link, Avatar } from '@mui/material';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
+import {
+  Box, Card, Grid, Divider, Container, Typography, Button, IconButton, Avatar, TextField, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Stack,
+} from '@mui/material';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import BedIcon from '@mui/icons-material/Bed';
 import KitchenIcon from '@mui/icons-material/Kitchen';
@@ -86,6 +88,15 @@ export default function EcommerceProductDetails() {
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
   const [value, setValue] = useState('1');
+  const [form, setForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    date: '',
+    message: '',
+  });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -100,20 +111,54 @@ export default function EcommerceProductDetails() {
     fetchProduct();
   }, [id]);
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm({
+      ...form,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await axios.post('/api/appointments', form);
+      setSnackbar({ open: true, message: 'Đăng ký lịch hẹn thành công!', severity: 'success' });
+      setForm({
+        name: '',
+        phone: '',
+        email: '',
+        date: '',
+        message: '',
+      });
+      handleClose();
+    } catch (error) {
+      setSnackbar({ open: true, message: 'Có lỗi xảy ra, vui lòng thử lại sau!', severity: 'error' });
+    }
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   return (
-    <Page title="Ecommerce: Product Details">
+    <Page title="Bất động sản chi tiết">
       <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 15 }}>
         <HeaderBreadcrumbs
-          heading="Product Details"
+          heading="Bất động sản chi tiết"
           links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
+            { name: 'Trang chủ', href: '/' },
             {
-              name: 'E-Commerce',
-              href: PATH_DASHBOARD.eCommerce.root,
-            },
-            {
-              name: 'Shop',
-              href: PATH_DASHBOARD.eCommerce.shop,
+              name: 'Cho thuê',
+              href: '/chothue',
             },
             { name: sentenceCase(id) },
           ]}
@@ -308,24 +353,100 @@ export default function EcommerceProductDetails() {
 
           <Grid item xs={12} md={4}>
             <ContactCard>
-              <ContactAvatar alt="Contact Person" src="/path/to/avatar.jpg" />
-              <Typography variant="h6" sx={{ mt: 2 }}>Huệ Building</Typography>
-              <Button fullWidth variant="contained" sx={{ mt: 2 }}>
-                0906 892 *** · Hiện số
-              </Button>
-              <Button fullWidth variant="outlined" sx={{ mt: 2 }}>
-                Chat qua Zalo
-              </Button>
-              <Button fullWidth variant="outlined" sx={{ mt: 2 }}>
-                Gửi email
-              </Button>
-              <Button fullWidth variant="outlined" sx={{ mt: 2 }}>
-                Yêu cầu liên hệ lại
+              <Stack direction='row' spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                <Avatar alt="Nguyễn Tiến Đạt" src="/path/to/avatar.jpg" justifyContent="start" sx={{ width: 56, height: 56 }} />
+                <Stack>
+                  <Typography variant="h6" sx={{ ml: -6 }}>Nguyễn Tiến Đạt</Typography>
+                  <Typography variant="body2" color="textSecondary">Đã tham gia: 11 tháng 19 ngày</Typography>
+                </Stack>
+              </Stack>
+              <Divider />
+              <Typography variant="h6" sx={{ mt: 2 }}>Đăng ký lịch hẹn</Typography>
+              <Button variant="contained" fullWidth sx={{ mt: 2 }} onClick={handleOpen}>
+                Đăng ký lịch hẹn
               </Button>
             </ContactCard>
           </Grid>
         </Grid>
       </Container>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Đăng ký lịch hẹn</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Điền thông tin của bạn vào form dưới đây để đăng ký lịch hẹn.
+          </DialogContentText>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+            <TextField
+              name="name"
+              label="Họ và tên"
+              variant="outlined"
+              fullWidth
+              value={form.name}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              name="phone"
+              label="Số điện thoại"
+              variant="outlined"
+              fullWidth
+              value={form.phone}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              name="email"
+              label="Email"
+              variant="outlined"
+              fullWidth
+              value={form.email}
+              onChange={handleChange}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              name="date"
+              label="Ngày hẹn"
+              type="date"
+              variant="outlined"
+              fullWidth
+              value={form.date}
+              onChange={handleChange}
+              InputLabelProps={{ shrink: true }}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              name="message"
+              label="Lời nhắn"
+              variant="outlined"
+              fullWidth
+              value={form.message}
+              onChange={handleChange}
+              multiline
+              rows={4}
+              sx={{ mb: 2 }}
+            />
+            <DialogActions>
+              <Button onClick={handleClose}>Hủy</Button>
+              <Button type="submit" variant="contained">Gửi đăng ký</Button>
+            </DialogActions>
+          </Box>
+        </DialogContent>
+      </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Page>
   );
 }

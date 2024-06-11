@@ -104,7 +104,7 @@ export default function HomeHero() {
             <Stack spacing={2}>
               <m.div variants={varFade().inRight}>
                 <Typography variant='h5' sx={{ color: '#445a63' }}>
-                  Our Partnership
+                  Quan hệ đối tác của chúng tôi
                 </Typography>
               </m.div>
 
