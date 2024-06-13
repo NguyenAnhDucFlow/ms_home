@@ -5,7 +5,6 @@ import com.anhduc.backend.entity.RentalType;
 import com.anhduc.backend.entity.VerificationStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import net.minidev.json.annotate.JsonIgnore;
@@ -16,16 +15,10 @@ import java.util.List;
 
 @Data
 public class PropertyListingDTO {
+
     private Long id;
 
     private UserDTO user;
-
-    @NotBlank(message = "Full name is mandatory")
-    private String fullName;
-
-    @NotBlank(message = "Phone number is mandatory")
-    @Pattern(regexp = "^\\+?\\d{10,15}$", message = "Invalid phone number")
-    private String phoneNumber;
 
     @NotBlank(message = "Title is mandatory")
     private String title;
@@ -53,7 +46,7 @@ public class PropertyListingDTO {
 
     private ListingStatus status;
 
-    private VerificationStatus verificationStatus;
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
 
     @JsonIgnore
     private List<MultipartFile> multipartFile;

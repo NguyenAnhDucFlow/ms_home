@@ -20,6 +20,7 @@ import navConfig from './NavConfig';
 import NavbarDocs from './NavbarDocs';
 import NavbarAccount from './NavbarAccount';
 import CollapseButton from './CollapseButton';
+import useAuth from '../../../hooks/useAuth';
 
 // ----------------------------------------------------------------------
 
@@ -39,6 +40,10 @@ NavbarVertical.propTypes = {
   onCloseSidebar: PropTypes.func,
 };
 
+const checkRole = (userRole, allowedRoles) => {
+  return allowedRoles.includes(userRole);
+};
+
 export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
   const theme = useTheme();
 
@@ -49,12 +54,19 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
   const { isCollapse, collapseClick, collapseHover, onToggleCollapse, onHoverEnter, onHoverLeave } =
     useCollapseDrawer();
 
+  const { user } = useAuth();
+
   useEffect(() => {
     if (isOpenSidebar) {
       onCloseSidebar();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  const filteredNavConfig = navConfig.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => checkRole(user?.role, item.roles))
+  }));
 
   const renderContent = (
     <Scrollbar
@@ -84,7 +96,7 @@ export default function NavbarVertical({ isOpenSidebar, onCloseSidebar }) {
         <NavbarAccount isCollapse={isCollapse} />
       </Stack>
 
-      <NavSectionVertical navConfig={navConfig} isCollapse={isCollapse} />
+      <NavSectionVertical navConfig={filteredNavConfig} isCollapse={isCollapse} />
 
       <Box sx={{ flexGrow: 1 }} />
 

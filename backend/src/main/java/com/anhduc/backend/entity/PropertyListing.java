@@ -23,12 +23,6 @@ public class PropertyListing extends Auditable {
     private User user;
 
     @Column(nullable = false)
-    private String fullName;
-
-    @Column(nullable = false)
-    private String phoneNumber;
-
-    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")

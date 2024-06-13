@@ -41,7 +41,6 @@ import { ProductTableRow, ProductTableToolbar } from '../../sections/@dashboard/
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Title', align: 'left' },
-  { id: 'fullName', label: 'Full Name', align: 'left' },
   { id: 'propertyType', label: 'Property Type', align: 'left' },
   { id: 'price', label: 'Price', align: 'right' },
   { id: 'status', label: 'Status', align: 'center' },
@@ -85,8 +84,8 @@ export default function EcommerceProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get('/api/listings');
-        console.log("response", response.data.data)
+        const response = await axios.get('/api/listings/top8/PENDING');
+        console.log("responssssssssssssssssse", response.data.data)
         setProducts(response.data.data);
         setIsLoading(false);
       } catch (error) {

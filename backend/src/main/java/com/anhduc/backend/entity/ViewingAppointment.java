@@ -5,12 +5,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.time.Instant;
+import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "viewing_appointments")
 @Data
 public class ViewingAppointment extends Auditable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appointmentId;
@@ -28,17 +30,14 @@ public class ViewingAppointment extends Auditable {
     private User landlord;
 
     @Column(nullable = false)
-    private Instant appointmentTime;
+    private Date appointmentTime;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private AppointmentStatus status;
+    private AppointmentStatus status = AppointmentStatus.PENDING;
 
     @Column(columnDefinition = "TEXT")
     private String feedback;
 
 }
 
-enum AppointmentStatus {
-    PENDING, CONFIRMED, CANCELLED
-}

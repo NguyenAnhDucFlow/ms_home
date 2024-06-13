@@ -74,13 +74,13 @@ export default function HomeHero() {
       <RootStyle>
         <HeroOverlayStyle
           alt="overlay"
-          src="https://minimal-assets-api.vercel.app/assets/overlay.svg"
+          src="/image/5305323.jpg"
           variants={varFade().in}
         />
 
         <HeroImgStyle
           alt="hero"
-          src="https://minimal-assets-api.vercel.app/assets/images/home/hero.png"
+          src="https://cdn2.iconfinder.com/data/icons/real-estate-2-16/512/33-512.png"
           variants={varFade().inUp}
         />
 
@@ -100,25 +100,6 @@ export default function HomeHero() {
             </m.div>
 
             <SearchBar />
-
-            <Stack spacing={2}>
-              <m.div variants={varFade().inRight}>
-                <Typography variant='h5' sx={{ color: '#445a63' }}>
-                  Quan hệ đối tác của chúng tôi
-                </Typography>
-              </m.div>
-
-              <Grid container spacing={2}>
-                <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
-                  <img src="/image/fpt-logo.jpg" alt="Đại học FPT" style={{ width: '10%', height: 'auto', display: 'inline' }} />
-                  <span style={{ marginLeft: '5px' }}>Đại học FPT</span>
-                </Grid>
-                <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center' }}>
-                  <img src="/image/dh-quoc-gia-logo.jpg" alt="Đại học Quốc Gia" style={{ width: '10%', height: 'auto' }} />
-                  <span style={{ marginLeft: '5px' }}>Đại học Quốc Gia <br /> TH.HCM</span>
-                </Grid>
-              </Grid>
-            </Stack>
           </ContentStyle>
         </Container>
       </RootStyle>

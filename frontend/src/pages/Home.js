@@ -77,16 +77,6 @@ export default function HomePage() {
             <ServiceSlider services={dataList} />
 
           </Container>
-          <Container component={MotionViewport} sx={{ pb: 10, textAlign: 'center', marginTop: '30px' }}>
-            <m.div variants={varFade().inUp}>
-              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, mb: 3, textAlign: 'center', mt: 5 }}>
-                Ưu đãi hấp dẫn
-              </Typography>
-            </m.div>
-
-            <ServiceSlider services={dataList} />
-
-          </Container>
           <Container component={MotionViewport} sx={{ marginTop: '30px', mb: 10 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12} md={12} lg={12} >

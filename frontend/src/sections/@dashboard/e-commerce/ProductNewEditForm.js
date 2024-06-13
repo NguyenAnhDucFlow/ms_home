@@ -72,8 +72,6 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const PropertySchema = Yup.object().shape({
-    fullName: Yup.string().required('Full name is mandatory'),
-    phoneNumber: Yup.string().required('Phone number is mandatory').matches(/^\+?\d{10,15}$/, 'Invalid phone number'),
     title: Yup.string().required('Title is mandatory'),
     description: Yup.string().required('Description is mandatory'),
     price: Yup.number().moreThan(0, 'Price must be greater than zero'),
@@ -89,8 +87,6 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
 
   const defaultValues = useMemo(
     () => ({
-      fullName: currentProperty?.fullName || '',
-      phoneNumber: currentProperty?.phoneNumber || '',
       title: currentProperty?.title || '',
       description: currentProperty?.description || '',
       price: currentProperty?.price || 0,
@@ -190,13 +186,6 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
         <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Stack spacing={3}>
-              <FormItem>
-                <RHFTextField name="fullName" label="Full Name" />
-              </FormItem>
-
-              <FormItem>
-                <RHFTextField name="phoneNumber" label="Phone Number" />
-              </FormItem>
 
               <FormItem>
                 <RHFTextField name="title" label="Title" />
@@ -235,7 +224,7 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
                     <RHFTextField
                       name="price"
                       label="Price"
-                      placeholder="0.00"
+                      placeholder="VD: 3 triệu"
                       value={getValues('price') === 0 ? '' : getValues('price')}
                       onChange={(event) => setValue('price', Number(event.target.value))}
                       InputLabelProps={{ shrink: true }}

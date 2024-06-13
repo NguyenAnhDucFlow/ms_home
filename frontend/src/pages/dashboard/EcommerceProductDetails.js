@@ -3,8 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { alpha, styled } from '@mui/material/styles';
 import {
-  Box, Card, Grid, Divider, Container, Typography, Button, IconButton, Avatar, TextField, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-  Stack,
+  Box, Card, Grid, Divider, Container, Typography, Button, IconButton, Avatar, TextField, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack
 } from '@mui/material';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 import BedIcon from '@mui/icons-material/Bed';
@@ -87,22 +86,22 @@ export default function EcommerceProductDetails() {
   const { id = '' } = useParams();
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
-  const [value, setValue] = useState('1');
   const [form, setForm] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    date: '',
-    message: '',
+    appointmentTime: '',
+    feedback: '',
   });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [open, setOpen] = useState(false);
+  const [listingId, setListingId] = useState(null);
+  const [landlordId, setLandlordId] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`/api/listings/${id}`);
         setProduct(response.data.data);
+        setListingId(response.data.data.id);
+        setLandlordId(response.data.data.user.id); // Assuming the response has landlordId
       } catch (error) {
         setError(error.response ? error.response.data.message : error.message);
       }
@@ -122,14 +121,19 @@ export default function EcommerceProductDetails() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await axios.post('/api/appointments', form);
+      await axios.post('/api/appointments', {
+        ...form,
+        propertyListing: {
+          id: listingId,
+        },
+        landlord: {
+          id: landlordId,
+        }
+      });
       setSnackbar({ open: true, message: 'Đăng ký lịch hẹn thành công!', severity: 'success' });
       setForm({
-        name: '',
-        phone: '',
-        email: '',
-        date: '',
-        message: '',
+        appointmentTime: '',
+        feedback: '',
       });
       handleClose();
     } catch (error) {
@@ -354,9 +358,9 @@ export default function EcommerceProductDetails() {
           <Grid item xs={12} md={4}>
             <ContactCard>
               <Stack direction='row' spacing={2} alignItems="center" sx={{ mb: 2 }}>
-                <Avatar alt="Nguyễn Tiến Đạt" src="/path/to/avatar.jpg" justifyContent="start" sx={{ width: 56, height: 56 }} />
-                <Stack>
-                  <Typography variant="h6" sx={{ ml: -6 }}>Nguyễn Tiến Đạt</Typography>
+                <Avatar alt="Nguyễn Tiến Đạt" src={product?.user.profilePicture} justifyContent="start" sx={{ width: 56, height: 56 }} />
+                <Stack direction='column' justifyContent='flex-start'>
+                  <Typography variant="h6" >{product?.user.username}</Typography>
                   <Typography variant="body2" color="textSecondary">Đã tham gia: 11 tháng 19 ngày</Typography>
                 </Stack>
               </Stack>
@@ -378,53 +382,26 @@ export default function EcommerceProductDetails() {
           </DialogContentText>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
             <TextField
-              name="name"
-              label="Họ và tên"
-              variant="outlined"
-              fullWidth
-              value={form.name}
-              onChange={handleChange}
-              required
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              name="phone"
-              label="Số điện thoại"
-              variant="outlined"
-              fullWidth
-              value={form.phone}
-              onChange={handleChange}
-              required
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              name="email"
-              label="Email"
-              variant="outlined"
-              fullWidth
-              value={form.email}
-              onChange={handleChange}
-              required
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              name="date"
+              name="appointmentTime"
               label="Ngày hẹn"
-              type="date"
+              type="datetime-local"
               variant="outlined"
               fullWidth
-              value={form.date}
+              value={form.appointmentTime}
               onChange={handleChange}
               InputLabelProps={{ shrink: true }}
               required
               sx={{ mb: 2 }}
+              inputProps={{
+                step: 1, // Allow input seconds
+              }}
             />
             <TextField
-              name="message"
+              name="feedback"
               label="Lời nhắn"
               variant="outlined"
               fullWidth
-              value={form.message}
+              value={form.feedback}
               onChange={handleChange}
               multiline
               rows={4}

@@ -68,6 +68,9 @@ export default function Router() {
         { path: 'ecommerce', element: <GeneralEcommerce /> },
         { path: 'new', element: <EcommerceProductCreate /> },
         { path: 'list', element: <EcommerceProductList /> },
+        { path: 'listdate', element: <EcommerceProductListDate /> },
+        { path: 'service', element: <EcommerceProductListService /> },
+
         {
           path: 'e-commerce',
           children: [
@@ -152,6 +155,8 @@ const DichVu = Loadable(lazy(() => import('../sections/@dashboard/service/HomePa
 const EcommerceShop = Loadable(lazy(() => import('../pages/dashboard/EcommerceShop')));
 const EcommerceProductDetails = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductDetails')));
 const EcommerceProductList = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductList')));
+const EcommerceProductListDate = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductListDate')));
+const EcommerceProductListService = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductListService')));
 const EcommerceProductCreate = Loadable(lazy(() => import('../pages/dashboard/EcommerceProductCreate')));
 const EcommerceCheckout = Loadable(lazy(() => import('../pages/dashboard/EcommerceCheckout')));
 

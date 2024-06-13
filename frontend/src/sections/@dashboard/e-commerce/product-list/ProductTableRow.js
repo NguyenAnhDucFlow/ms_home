@@ -52,7 +52,6 @@ export default function ProductTableRow({ row, selected, onEditRow, onSelectRow,
         </Typography>
       </TableCell>
 
-      <TableCell>{fullName}</TableCell>
 
       <TableCell>{propertyType}</TableCell>
 
