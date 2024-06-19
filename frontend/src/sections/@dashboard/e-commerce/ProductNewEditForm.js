@@ -76,7 +76,7 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
     description: Yup.string().required('Description is mandatory'),
     price: Yup.number().moreThan(0, 'Price must be greater than zero'),
     address: Yup.string().required('Address is mandatory'),
-    propertyType: Yup.string().required('Property type is mandatory'),
+    typeOfRental: Yup.string().required('Property type is mandatory'),
     images: Yup.array().min(1, 'At least one image is required'),
     rooms: Yup.number().min(1, 'At least one room is required').required('Number of rooms is mandatory'),
     bathrooms: Yup.number().min(1, 'At least one bathroom is required').required('Number of bathrooms is mandatory'),
@@ -91,7 +91,7 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
       description: currentProperty?.description || '',
       price: currentProperty?.price || 0,
       address: currentProperty?.address || '',
-      propertyType: currentProperty?.propertyType || PROPERTY_TYPE_OPTION[0],
+      typeOfRental: currentProperty?.typeOfRental || PROPERTY_TYPE_OPTION[0],
       amenities: currentProperty?.amenities || [],
       conditions: currentProperty?.conditions || '',
       images: currentProperty?.images || [],
@@ -247,7 +247,7 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
                 </AccordionSummary>
                 <AccordionDetails>
                   <FormItem>
-                    <RHFSelect name="propertyType" label="Property Type">
+                    <RHFSelect name="typeOfRental" label="Property Type">
                       {PROPERTY_TYPE_OPTION.map((type) => (
                         <option key={type} value={type}>
                           {type}

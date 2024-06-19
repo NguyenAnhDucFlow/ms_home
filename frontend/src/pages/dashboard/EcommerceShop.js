@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 // form
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 // @mui
-import { Container, Typography, Stack } from '@mui/material';
+import { Container, Typography, Stack, Box, FormControl, MenuItem, TextField, Button, Divider, Grid } from '@mui/material';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // components
@@ -12,10 +12,7 @@ import { FormProvider } from '../../components/hook-form';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import axios from '../../utils/axios';
 // sections
-import {
-  ShopProductList,
-  ShopProductSearch,
-} from '../../sections/@dashboard/e-commerce/shop';
+import { ShopProductList, ShopProductSearch } from '../../sections/@dashboard/e-commerce/shop';
 import FilterBar from '../../sections/@dashboard/e-commerce/shop/FilterBar';
 
 // ----------------------------------------------------------------------
@@ -23,7 +20,6 @@ import FilterBar from '../../sections/@dashboard/e-commerce/shop/FilterBar';
 export default function EcommerceShop() {
   const { themeStretch } = useSettings();
 
-  const [openFilter, setOpenFilter] = useState(false);
   const [products, setProducts] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -33,7 +29,7 @@ export default function EcommerceShop() {
     priceMax: null,
     address: '',
     typeOfRental: '',
-    amenities: [],
+    dimensions: '',
   });
 
   const [page, setPage] = useState(0);
@@ -46,7 +42,7 @@ export default function EcommerceShop() {
     priceMax: filters.priceMax,
     address: filters.address,
     typeOfRental: filters.typeOfRental,
-    amenities: filters.amenities,
+    dimensions: filters.dimensions,
   };
 
   const methods = useForm({
@@ -61,7 +57,7 @@ export default function EcommerceShop() {
     !values.priceMax &&
     !values.address &&
     !values.typeOfRental &&
-    values.amenities.length === 0;
+    values.dimensions === '';
 
   const fetchProducts = async (filterParams) => {
     setLoading(true);
@@ -90,13 +86,13 @@ export default function EcommerceShop() {
       priceMax: filters.priceMax,
       address: filters.address,
       typeOfRental: filters.typeOfRental,
-      amenities: filters.amenities,
+      dimensions: filters.dimensions,
     };
     fetchProducts(filterParams);
   }, [filters, page, size, sortBy, sortDirection]);
 
   const handleSearch = (data) => {
-    const { address, priceRange, typeOfRental } = data;
+    const { address, priceRange, typeOfRental, dimensions } = data;
     let priceMin = null;
     let priceMax = null;
     if (priceRange === 'below1000000') {
@@ -107,39 +103,19 @@ export default function EcommerceShop() {
     } else if (priceRange === 'above5000000') {
       priceMin = 5000000;
     }
-    setFilters({ ...filters, address, priceMin, priceMax, typeOfRental });
+    setFilters({ ...filters, address, priceMin, priceMax, typeOfRental, dimensions });
   };
 
-  const handleOpenFilter = () => {
-    setOpenFilter(true);
-  };
-
-  const handleCloseFilter = () => {
-    setOpenFilter(false);
-  };
-
-  const handleResetFilter = () => {
-    reset();
-    setFilters({
-      priceMin: null,
-      priceMax: null,
-      address: '',
-      typeOfRental: '',
-      amenities: [],
-    });
-    handleCloseFilter();
-  };
-
-  const handleRemoveFilter = (key) => {
-    setValue(key, defaultValues[key]);
-    setFilters((prev) => ({ ...prev, [key]: defaultValues[key] }));
+  const handleSort = (data) => {
+    setSortBy(data.sortBy);
+    setSortDirection(data.sortDirection);
   };
 
   return (
     <Page title="Cho thuê">
       <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 15 }}>
+        <FilterBar onSearch={handleSearch} />
         <HeaderBreadcrumbs
-          heading="Cho thuê"
           links={[
             {
               name: 'Trang chủ',
@@ -149,10 +125,7 @@ export default function EcommerceShop() {
           ]}
         />
 
-        <Stack direction='row' justifyContent='space-between'>
-          <ShopProductSearch />
-          <FilterBar onSearch={handleSearch} />
-        </Stack>
+        <SortBar onSort={handleSort} totalElements={totalProducts} />
 
         <Stack sx={{ mb: 3 }}>
           {!isDefault && (
@@ -167,6 +140,25 @@ export default function EcommerceShop() {
 
         <ShopProductList products={products} loading={loading} />
       </Container>
-    </Page >
+    </Page>
   );
 }
+
+function SortBar({ onSort, totalElements }) {
+  const handleSort = (sortBy, sortDirection) => {
+    onSort({ sortBy, sortDirection });
+  };
+
+  return (
+    <Stack>
+      <Typography variant='subtitle1' sx={{ mb: 1 }}>Tổng {totalElements} kết quả</Typography>
+      <Stack direction='row' alignItems='center' spacing={1}>
+        <Typography variant='subtitle2' sx={{ pr: 1 }}>Sắp xếp: </Typography>
+        <Button variant="contained" size="small" onClick={() => handleSort('createdAt', 'desc')}>Mặc định</Button>
+        <Button variant="contained" size="small" onClick={() => handleSort('price', 'asc')}>Giá tăng dần</Button>
+        <Button variant="contained" size="small" onClick={() => handleSort('price', 'desc')}>Giá giảm dần</Button>
+      </Stack>
+    </Stack>
+  );
+}
+

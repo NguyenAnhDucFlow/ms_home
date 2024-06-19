@@ -92,7 +92,7 @@ public class PropertyListingController {
             @RequestParam(required = false) Double priceMax,
             @RequestParam(required = false) String address,
             @RequestParam(required = false) RentalType typeOfRental,
-            @RequestParam(required = false) List<String> amenities,
+            @RequestParam(required = false) String dimensions,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -103,9 +103,15 @@ public class PropertyListingController {
         criteria.setPriceMax(priceMax);
         criteria.setAddress(address);
         criteria.setTypeOfRental(typeOfRental);
-        criteria.setAmenities(amenities);
+        criteria.setDimensions(dimensions);
 
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Sort sort;
+        if ("price".equals(sortBy)) {
+            sort = Sort.by(Sort.Direction.fromString(sortDirection), "price");
+        } else {
+            sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<PropertyListingDTO> result = propertyListingService.searchListings(criteria, pageable);
@@ -115,6 +121,7 @@ public class PropertyListingController {
                 .data(result)
                 .build();
     }
+
 
     @GetMapping("/top8/{verificationStatus}")
     public ResponseDTO<List<PropertyListingDTO>> getTop8Listings(@PathVariable VerificationStatus verificationStatus ) {

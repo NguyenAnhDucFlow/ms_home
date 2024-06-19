@@ -35,6 +35,10 @@ public class PropertyListingSpecification implements Specification<PropertyListi
             predicates.add(builder.equal(root.get("typeOfRental"), criteria.getTypeOfRental()));
         }
 
+        if (criteria.getDimensions() != null && !criteria.getDimensions().isEmpty()) {
+            predicates.add(builder.like(builder.lower(root.get("dimensions")), "%" + criteria.getDimensions().toLowerCase() + "%"));
+        }
+
         if (criteria.getAmenities() != null && !criteria.getAmenities().isEmpty()) {
             for (String amenity : criteria.getAmenities()) {
                 predicates.add(builder.isMember(amenity, root.get("amenities")));

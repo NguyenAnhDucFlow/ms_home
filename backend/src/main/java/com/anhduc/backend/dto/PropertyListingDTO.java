@@ -34,7 +34,7 @@ public class PropertyListingDTO {
     private String address;
 
     @NotNull(message = "Property type is mandatory")
-    private RentalType propertyType;
+    private RentalType typeOfRental;
 
     private List<String> amenities;
 

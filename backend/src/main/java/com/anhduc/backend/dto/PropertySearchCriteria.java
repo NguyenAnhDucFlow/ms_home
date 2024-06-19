@@ -7,10 +7,12 @@ import java.util.List;
 
 @Data
 public class PropertySearchCriteria {
+
     private Double priceMin;
     private Double priceMax;
     private String address;
     private RentalType typeOfRental;
     private List<String> amenities;
+    private String dimensions;
 
 }

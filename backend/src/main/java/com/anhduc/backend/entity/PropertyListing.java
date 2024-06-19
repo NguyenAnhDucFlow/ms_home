@@ -35,7 +35,7 @@ public class PropertyListing extends Auditable {
     private String address;
 
     @Enumerated(EnumType.STRING)
-    private RentalType propertyType;
+    private RentalType typeOfRental;
 
     @Convert(converter = AmenitiesConverter.class)
     private List<String> amenities;
