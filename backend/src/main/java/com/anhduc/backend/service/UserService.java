@@ -5,6 +5,7 @@ import com.anhduc.backend.dto.UserDTO;
 import com.anhduc.backend.dto.UserRegistrationDTO;
 import com.anhduc.backend.dto.UserUpdateDTO;
 import com.anhduc.backend.entity.PasswordResetToken;
+import com.anhduc.backend.entity.Role;
 import com.anhduc.backend.entity.User;
 import com.anhduc.backend.exception.ResourceNotFoundException;
 import com.anhduc.backend.repository.PasswordResetTokenRepository;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public interface UserService {
 
     String registerUser(UserRegistrationDTO registrationDTO);
+    String registerUserLandlord(UserRegistrationDTO registrationDTO);
     List<UserDTO> getAllUsers();
     UserDTO getUserById(Long id);
     void updateUser(UserUpdateDTO userUpdateDTO);
@@ -115,6 +117,50 @@ class UserServiceImpl implements UserService {
 
         User user = modelMapper.map(registrationDTO, User.class);
         user.setUsername(registrationDTO.getFullName());
+        user.setPasswordHash(passwordEncoder.encode(registrationDTO.getPassword()));
+        user.setConfirmationToken(UUID.randomUUID().toString());
+        user.setConfirmationSentAt(LocalDateTime.now());
+
+        userRepository.save(user);
+        try {
+            String emailContent = emailTemplateService.buildEmail(user.getUsername(), "To confirm your account, please click the link below:", confirmationUrl + user.getConfirmationToken(), EmailType.CONFIRMATION);
+            MessageDTO messageDTO = createMessageDTO(user, EMAIL_SUBJECT_CONFIRMATION, "To confirm your account, please click the link below:");
+            emailSenderService.sendEmail(messageDTO, emailContent);
+        } catch (Exception e) {
+            userRepository.delete(user);
+            logger.error("Error sending confirmation email", e);
+            return "Error sending confirmation email. Please try again.";
+        }
+        logger.info("Registered user with email: {}", registrationDTO.getEmail());
+        return "Registration successful. Please check your email to confirm your account.";
+    }
+
+    @Override
+    public String registerUserLandlord(UserRegistrationDTO registrationDTO) {
+        logger.info("Registering user with email: {}", registrationDTO.getEmail());
+
+        if (!isValidEmail(registrationDTO.getEmail())) {
+            logger.warn("Invalid email format for email: {}", registrationDTO.getEmail());
+            return "Invalid email format.";
+        }
+
+        Optional<User> existingUser = userRepository.findByEmail(registrationDTO.getEmail());
+        if (existingUser.isPresent()) {
+            String message = existingUser.get().getConfirmed()
+                    ? "Email already registered."
+                    : "Email already registered but not confirmed. Please check your email to confirm your account.";
+            logger.warn(message);
+            return message;
+        }
+
+        if (registrationDTO.getPassword() == null || registrationDTO.getPassword().length() < 8) {
+            logger.warn("Password must be at least 8 characters long.");
+            return "Password must be at least 8 characters long.";
+        }
+
+        User user = modelMapper.map(registrationDTO, User.class);
+        user.setUsername(registrationDTO.getFullName());
+        user.setRole(Role.LANDLORD);
         user.setPasswordHash(passwordEncoder.encode(registrationDTO.getPassword()));
         user.setConfirmationToken(UUID.randomUUID().toString());
         user.setConfirmationSentAt(LocalDateTime.now());

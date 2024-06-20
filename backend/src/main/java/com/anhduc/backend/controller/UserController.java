@@ -62,6 +62,14 @@ public class UserController {
                 .data(result)
                 .build();
     }
+    @PostMapping("/register-landlord")
+    public ResponseDTO<String> registerUserLandlord(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
+        String result = userService.registerUserLandlord(registrationDTO);
+        return ResponseDTO.<String>builder()
+                .status(result.contains("successful") ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
+                .data(result)
+                .build();
+    }
 
     @PostMapping("/resend-confirmation")
     public ResponseDTO<String> resendConfirmation(@RequestParam("email") String email) {

@@ -52,6 +52,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.cors().configurationSource(new CorsConfigurationSource() {
+
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration configuration = new CorsConfiguration();
@@ -62,17 +63,13 @@ public class SecurityConfig {
                     }
                 }).and() // Enable CORS globally
                 .authorizeRequests()
-                .requestMatchers("/api/users/register", "/api/users/confirm-account", "api/login").permitAll()
-                .requestMatchers("/api/student/**")
-                .hasAuthority("STUDENT")
-                .requestMatchers("/api/landlord/**").hasAuthority("LANDLORD")
-                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                 .anyRequest().permitAll()
                 .and().sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .csrf(AbstractHttpConfigurer::disable);
         http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 
 
     @Bean
