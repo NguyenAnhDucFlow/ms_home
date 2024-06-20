@@ -8,6 +8,7 @@ import com.anhduc.backend.entity.PropertyListing;
 import com.anhduc.backend.entity.RentalType;
 import com.anhduc.backend.entity.VerificationStatus;
 import com.anhduc.backend.jwt.JwtTokenService;
+import com.anhduc.backend.repository.PropertyListingRepository;
 import com.anhduc.backend.service.PropertyListingService;
 import com.anhduc.backend.service.S3StorageService;
 import com.anhduc.backend.service.UserService;
@@ -40,6 +41,9 @@ public class PropertyListingController {
     private final UserService userService;
 
     @Autowired
+    private PropertyListingRepository propertyListingRepository;
+
+    @Autowired
     public PropertyListingController(PropertyListingService propertyListingService, JwtTokenService jwtTokenService, S3StorageService s3StorageService, UserService userService) {
         this.propertyListingService = propertyListingService;
         this.jwtTokenService = jwtTokenService;
@@ -70,6 +74,42 @@ public class PropertyListingController {
         return ResponseDTO.<PropertyListingDTO>builder()
                 .status(HttpStatus.OK)
                 .data(result)
+                .build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseDTO<PropertyListingDTO> updatePropertyListing(
+            @PathVariable Long id,
+            @Valid @ModelAttribute PropertyListingDTO propertyListingDTO,
+            @RequestHeader("Authorization") String token) throws IOException {
+
+        Long userId = jwtTokenService.getUserIdFromToken(token.replace("Bearer ", ""));
+
+        List<String> images = new ArrayList<>();
+
+        PropertyListing existingListing = propertyListingRepository.findById(id).orElseThrow();
+
+        if (propertyListingDTO.getMultipartFile() != null && !propertyListingDTO.getMultipartFile().isEmpty()) {
+            for (MultipartFile file : propertyListingDTO.getMultipartFile()) {
+                String filename = file.getOriginalFilename();
+                String extension = filename != null ? filename.substring(filename.lastIndexOf(".")) : null;
+                String newFilename = UUID.randomUUID().toString() + extension;
+                String fileUrl = s3StorageService.uploadFile(newFilename, file);
+                images.add(fileUrl);
+                if (propertyListingDTO.getCover() == null) {
+                    propertyListingDTO.setCover(fileUrl);
+                }
+            }
+            propertyListingDTO.setImages(images);
+        } else {
+            propertyListingDTO.setImages(existingListing.getImages());
+            propertyListingDTO.setCover(existingListing.getCover());
+        }
+
+        PropertyListingDTO updatedListing = propertyListingService.updatePropertyListing(id, propertyListingDTO, userId);
+        return ResponseDTO.<PropertyListingDTO>builder()
+                .status(HttpStatus.OK)
+                .data(updatedListing)
                 .build();
     }
 

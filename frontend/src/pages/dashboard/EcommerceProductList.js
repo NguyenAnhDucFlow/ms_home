@@ -203,8 +203,8 @@ export default function EcommerceProductList() {
                           selected={selected.includes(row.id)}
                           onSelectRow={() => onSelectRow(row.id)}
                           onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.name)}
-                          onStatusChange={handleStatusChange} // Pass the handler to the row component
+                          onEditRow={() => handleEditRow(row.id)}
+                          onStatusChange={handleStatusChange}
                         />
                       ) : (
                         !isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />

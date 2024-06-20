@@ -42,9 +42,7 @@ export default function Router() {
         {
           path: 'register',
           element: (
-            <GuestGuard>
-              <Register />
-            </GuestGuard>
+            <Register />
           ),
         },
         { path: 'login-unprotected', element: <Login /> },
@@ -79,7 +77,7 @@ export default function Router() {
             { path: 'product/:name', element: <EcommerceProductDetails /> },
             { path: 'list', element: <EcommerceProductList /> },
             { path: 'product/new', element: <EcommerceProductCreate /> },
-            { path: 'product/:name/edit', element: <EcommerceProductCreate /> },
+            { path: 'product/:id/edit', element: <EcommerceProductCreate /> },
             { path: 'checkout', element: <EcommerceCheckout /> },
           ],
         },

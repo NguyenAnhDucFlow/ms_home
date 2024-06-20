@@ -39,16 +39,15 @@
         .content a:hover {
             text-decoration: underline;
         }
-        .button {
+        .text-button {
             display: inline-block;
-            padding: 10px 20px;
             margin-top: 20px;
             font-size: 16px;
-            color: #ffffff;
-            background-color: #1a73e8;
+            color: #1a73e8;
             border-radius: 5px;
             text-align: center;
             text-decoration: none;
+            cursor: pointer;
         }
         .footer {
             text-align: center;
@@ -68,9 +67,9 @@
     </div>
     <div class="content">
         <p>Hello <span th:text="${name}"></span>,</p>
-        <p th:if="${emailType == 'CONFIRMATION'}" th:text="${content} + ' Please confirm your account by clicking the button below.'"></p>
-        <p th:if="${emailType == 'PASSWORD_RESET'}" th:text="${content} + ' Please reset your password by clicking the button below.'"></p>
-        <a th:href="${link}" class="button">Click Here</a>
+        <p th:if="${emailType == 'CONFIRMATION'}" th:text="${content} + ' Please confirm your account by clicking the link below.'"></p>
+        <p th:if="${emailType == 'PASSWORD_RESET'}" th:text="${content} + ' Please reset your password by clicking the link below.'"></p>
+        <a th:href="${link}" class="text-button">Click Here</a>
         <p>Best Regards,</p>
         <p><em>mshome.id.vn</em></p>
     </div>

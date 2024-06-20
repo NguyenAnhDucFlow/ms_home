@@ -125,12 +125,11 @@ function AuthProvider({ children }) {
     });
   };
 
-  const register = async (email, password, firstName, lastName) => {
-    const response = await axios.post('/api/account/register', {
+  const register = async (fullName, email, password) => {
+    const response = await axios.post('/api/users/register', {
+      fullName,
       email,
       password,
-      firstName,
-      lastName,
     });
     const { accessToken, user } = response.data;
 
@@ -142,6 +141,7 @@ function AuthProvider({ children }) {
       },
     });
   };
+
 
   const logout = async () => {
     setSession(null);

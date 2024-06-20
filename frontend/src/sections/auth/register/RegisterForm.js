@@ -7,7 +7,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Stack, IconButton, InputAdornment, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // @mui/icons-material
-import PhoneIcon from '@mui/icons-material/Phone';
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 // hooks
 import useAuth from '../../../hooks/useAuth';
@@ -24,13 +25,11 @@ export default function RegisterForm() {
   const isMountedRef = useIsMountedRef();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   const RegisterSchema = Yup.object().shape({
-    phone: Yup.string()
-      .matches(/^[0-9]+$/, 'Phone number must be only digits')
-      .min(10, 'Phone number must be at least 10 digits')
-      .max(15, 'Phone number must be at most 15 digits')
-      .required('Phone number is required'),
+    fullName: Yup.string().required('Full Name is required'),
+    email: Yup.string().email('Must be a valid email').required('Email is required'),
     password: Yup.string().required('Password is required'),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'Passwords must match')
@@ -38,7 +37,8 @@ export default function RegisterForm() {
   });
 
   const defaultValues = {
-    phone: '',
+    fullName: '',
+    email: '',
     password: '',
     confirmPassword: '',
   };
@@ -57,7 +57,8 @@ export default function RegisterForm() {
 
   const onSubmit = async (data) => {
     try {
-      await register(data.phone, data.password);
+      await register(data.fullName, data.email, data.password);
+      setIsRegistered(true); // Set the registration status to true upon successful registration
     } catch (error) {
       console.error(error);
       reset();
@@ -72,13 +73,31 @@ export default function RegisterForm() {
       <Stack spacing={3}>
         {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
 
+        {isRegistered && (
+          <Alert severity="success">
+            Registration successful! Please check your email to verify your account.
+          </Alert>
+        )}
+
         <RHFTextField
-          name="phone"
-          label="Số điện thoại"
+          name="fullName"
+          label="Full Name"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <PhoneIcon />
+                <PersonIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <RHFTextField
+          name="email"
+          label="Email Address"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <EmailIcon />
               </InputAdornment>
             ),
           }}
@@ -86,7 +105,7 @@ export default function RegisterForm() {
 
         <RHFTextField
           name="password"
-          label="Nhập mật khẩu"
+          label="Password"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             startAdornment: (
@@ -106,7 +125,7 @@ export default function RegisterForm() {
 
         <RHFTextField
           name="confirmPassword"
-          label="Nhập lại mật khẩu"
+          label="Confirm Password"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             startAdornment: (
@@ -125,7 +144,7 @@ export default function RegisterForm() {
         />
 
         <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting} sx={{ my: 2 }}>
-          Đăng kí
+          Register
         </LoadingButton>
       </Stack>
     </FormProvider>

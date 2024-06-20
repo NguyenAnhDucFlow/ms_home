@@ -28,11 +28,9 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
 import {
   FormProvider,
-  RHFSwitch,
-  RHFSelect,
   RHFEditor,
   RHFTextField,
-  RHFRadioGroup,
+  RHFSelect,
   RHFUploadMultiFile,
 } from '../../../components/hook-form';
 // API
@@ -136,7 +134,9 @@ export default function PropertyListingForm({ isEdit, currentProperty }) {
       Object.keys(data).forEach((key) => {
         if (key === 'images') {
           data.images.forEach((file) => {
-            formData.append('multipartFile', file);
+            if (typeof file !== 'string') { // Only append if the file is not a string
+              formData.append('multipartFile', file);
+            }
           });
         } else {
           formData.append(key, data[key]);

@@ -34,6 +34,7 @@ public interface PropertyListingService {
     Page<PropertyListingDTO> searchListings(PropertySearchCriteria searchCriteria, Pageable pageable);
     List<PropertyListingDTO> getTop8ListingByStatus(VerificationStatus verificationStatus);
     PropertyListing updateStatus(Long id, VerificationStatus verificationStatus);
+    PropertyListingDTO updatePropertyListing(Long id, PropertyListingDTO propertyListingDTO, Long userId);
 }
 
 @Service
@@ -131,6 +132,30 @@ class PropertyListingServiceImpl implements PropertyListingService {
         } else {
             throw new ResourceNotFoundException("Could not find property listing" + id);
         }
+    }
+
+    @Override
+    public PropertyListingDTO updatePropertyListing(Long id, PropertyListingDTO propertyListingDTO, Long userId) {
+        PropertyListing existingListing = propertyListingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Property listing not found with id " + id));
+
+        existingListing.setTitle(propertyListingDTO.getTitle());
+        existingListing.setDescription(propertyListingDTO.getDescription());
+        existingListing.setPrice(propertyListingDTO.getPrice());
+        existingListing.setAddress(propertyListingDTO.getAddress());
+        existingListing.setTypeOfRental(propertyListingDTO.getTypeOfRental());
+        existingListing.setAmenities(propertyListingDTO.getAmenities());
+        existingListing.setConditions(propertyListingDTO.getConditions());
+        existingListing.setRooms(propertyListingDTO.getRooms());
+        existingListing.setBathrooms(propertyListingDTO.getBathrooms());
+        existingListing.setWater(propertyListingDTO.getWater());
+        existingListing.setElectricity(propertyListingDTO.getElectricity());
+        existingListing.setDimensions(propertyListingDTO.getDimensions());
+        existingListing.setImages(propertyListingDTO.getImages());
+        existingListing.setCover(propertyListingDTO.getCover());
+        PropertyListing updatedListing = propertyListingRepository.save(existingListing);
+
+        return modelMapper.map(updatedListing, PropertyListingDTO.class);
     }
 
     private PropertyListingDTO convertToDto(PropertyListing propertyListing){
