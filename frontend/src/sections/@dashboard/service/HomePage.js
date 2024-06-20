@@ -13,7 +13,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 const services = [
     {
         title: 'Vệ sinh đồ điện lạnh',
-        image: '/image/dv don dep.png',
+        image: '/image/dv sua may lanh.png',
     },
     {
         title: 'Chuyển nhà',

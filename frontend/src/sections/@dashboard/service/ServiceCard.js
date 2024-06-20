@@ -10,6 +10,9 @@ import Image from '../../../components/Image';
 ServiceCard.propTypes = {
   dataCart: PropTypes.object.isRequired,
 };
+function formatCurrency(number) {
+  return number.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+}
 
 export default function ServiceCard({ dataCart }) {
   const { name, rooms, cover, price, address, dimensions, bathrooms, id } = dataCart;
@@ -20,7 +23,7 @@ export default function ServiceCard({ dataCart }) {
       <Stack spacing={1} sx={{ p: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" component="div" color="text.primary">
-            {price} tr/tháng
+            {formatCurrency({price})} /tháng
           </Typography>
           <IconButton size='small'>
             <FavoriteBorderIcon />

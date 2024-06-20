@@ -85,7 +85,7 @@ export default function MainHeader() {
           {!user ? (
             <>
               <Button variant="outlined" sx={{ marginRight: 1 }} href='/auth/login'>Đăng nhập</Button>
-              <Button variant="contained" color="primary">Đăng kí</Button>
+              <Button variant="contained" href='/auth/register' color="primary">Đăng kí</Button>
             </>
           ) : (
             <AccountPopover />

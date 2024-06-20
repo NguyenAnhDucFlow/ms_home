@@ -86,9 +86,9 @@ export default function FilterBar({ onSearch }) {
                                     size="small"
                                 >
                                     <MenuItem value=""><em>None</em></MenuItem>
-                                    <MenuItem value="below1">Below 1 triệu</MenuItem>
+                                    <MenuItem value="below1">Dưới 1 triệu</MenuItem>
                                     <MenuItem value="1to5">1 triệu - 5 triệu</MenuItem>
-                                    <MenuItem value="above5">Above 5 triệu</MenuItem>
+                                    <MenuItem value="above5">trên 5 5 triệu</MenuItem>
                                 </Select>
                             )}
                         />
