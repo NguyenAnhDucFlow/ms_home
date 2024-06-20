@@ -162,11 +162,7 @@ export default function EcommerceProductListDate() {
                 <HeaderBreadcrumbs
                     heading="Danh Sách Lịch Xem"
                     links={[
-                        { name: 'Bảng Điều Khiển', href: PATH_DASHBOARD.root },
-                        {
-                            name: 'Thương Mại Điện Tử',
-                            href: PATH_DASHBOARD.eCommerce.root,
-                        },
+                        { name: 'Dashboard', href: PATH_DASHBOARD.root },
                         { name: 'Danh Sách Lịch Xem' },
                     ]}
 

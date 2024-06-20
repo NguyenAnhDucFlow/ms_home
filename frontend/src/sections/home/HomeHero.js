@@ -149,7 +149,7 @@ function SearchBar() {
           <MenuItem value="Chung cư">Chung cư</MenuItem>
           <MenuItem value="Nhà riêng">Nhà riêng</MenuItem>
         </TextField>
-        <Button variant="contained" color="primary" sx={{ flexGrow: 0, whiteSpace: 'nowrap' }}>
+        <Button href='/chothue' variant="contained" color="primary" sx={{ flexGrow: 0, whiteSpace: 'nowrap' }}>
           Tìm kiếm
         </Button>
       </Box>

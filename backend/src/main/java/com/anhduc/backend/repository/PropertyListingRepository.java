@@ -17,5 +17,6 @@ public interface PropertyListingRepository extends JpaRepository<PropertyListing
     @Query("SELECT a FROM PropertyListing a WHERE a.verificationStatus = :status ORDER BY a.createdAt DESC")
     List<PropertyListing> findTop8ByStatusOrderByCreatedAtDesc(@Param("status") VerificationStatus verificationStatus, Pageable pageable);
 
-    Optional<PropertyListing> findByUser(User user);
+    @Query("SELECT p FROM PropertyListing p WHERE p.user = :user")
+    Optional<List<PropertyListing>> findAllByUser(@Param("user") User user);
 }

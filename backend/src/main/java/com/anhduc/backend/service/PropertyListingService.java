@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public interface PropertyListingService {
@@ -32,6 +33,7 @@ public interface PropertyListingService {
     List<PropertyListingDTO> getPropertyListingsByUser(Long userId);
     Page<PropertyListingDTO> searchListings(PropertySearchCriteria searchCriteria, Pageable pageable);
     List<PropertyListingDTO> getTop8ListingByStatus(VerificationStatus verificationStatus);
+    PropertyListing updateStatus(Long id, VerificationStatus verificationStatus);
 }
 
 @Service
@@ -97,7 +99,7 @@ class PropertyListingServiceImpl implements PropertyListingService {
     @Transactional(readOnly = true)
     public List<PropertyListingDTO> getPropertyListingsByUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Could not find user" + userId));
-        return propertyListingRepository.findByUser(user)
+        return propertyListingRepository.findAllByUser(user)
                 .stream().map(propertyListing -> modelMapper.map(propertyListing, PropertyListingDTO.class))
                 .collect(Collectors.toList());
     }
@@ -116,6 +118,19 @@ class PropertyListingServiceImpl implements PropertyListingService {
         return propertyListingRepository.findTop8ByStatusOrderByCreatedAtDesc(verificationStatus, pageable)
                 .stream().map(propertyListing -> modelMapper.map(propertyListing, PropertyListingDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public PropertyListing updateStatus(Long id, VerificationStatus verificationStatus) {
+        Optional<PropertyListing> propertyListing = propertyListingRepository.findById(id);
+        if (propertyListing.isPresent()) {
+            PropertyListing propertyListing1 = propertyListing.get();
+            propertyListing1.setVerificationStatus(verificationStatus);
+            return propertyListingRepository.save(propertyListing1);
+        } else {
+            throw new ResourceNotFoundException("Could not find property listing" + id);
+        }
     }
 
     private PropertyListingDTO convertToDto(PropertyListing propertyListing){

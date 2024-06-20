@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from 'react';
-// form
 import { useForm, Controller } from 'react-hook-form';
-// @mui
 import { Container, Typography, Stack, Box, FormControl, MenuItem, TextField, Button, Divider, Grid } from '@mui/material';
-// hooks
 import useSettings from '../../hooks/useSettings';
-// components
 import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
-import { FormProvider } from '../../components/hook-form';
-import { PATH_DASHBOARD } from '../../routes/paths';
 import axios from '../../utils/axios';
-// sections
-import { ShopProductList, ShopProductSearch } from '../../sections/@dashboard/e-commerce/shop';
+import { ShopProductList } from '../../sections/@dashboard/e-commerce/shop';
 import FilterBar from '../../sections/@dashboard/e-commerce/shop/FilterBar';
 
 // ----------------------------------------------------------------------
@@ -49,7 +42,7 @@ export default function EcommerceShop() {
     defaultValues,
   });
 
-  const { reset, watch, setValue } = methods;
+  const { watch } = methods;
   const values = watch();
 
   const isDefault =
@@ -62,6 +55,14 @@ export default function EcommerceShop() {
   const fetchProducts = async (filterParams) => {
     setLoading(true);
     try {
+      console.log('Request Params:', {
+        ...filterParams,
+        page,
+        size,
+        sortBy,
+        sortDirection,
+      }); // Debug thông tin request
+
       const response = await axios.get('/api/listings/search', {
         params: {
           ...filterParams,
@@ -71,6 +72,8 @@ export default function EcommerceShop() {
           sortDirection,
         },
       });
+      console.log('Response data:', response.data); // Debug thông tin response
+
       setProducts(response.data.data.content);
       setTotalProducts(response.data.data.totalElements);
     } catch (error) {
@@ -92,18 +95,23 @@ export default function EcommerceShop() {
   }, [filters, page, size, sortBy, sortDirection]);
 
   const handleSearch = (data) => {
-    const { address, priceRange, typeOfRental, dimensions } = data;
-    let priceMin = null;
-    let priceMax = null;
-    if (priceRange === 'below1000000') {
-      priceMax = 1000000;
-    } else if (priceRange === '1000000to5000000') {
-      priceMin = 1000000;
-      priceMax = 5000000;
-    } else if (priceRange === 'above5000000') {
-      priceMin = 5000000;
-    }
-    setFilters({ ...filters, address, priceMin, priceMax, typeOfRental, dimensions });
+    const { address, priceMin, priceMax, typeOfRental, dimensions } = data;
+
+    setFilters({
+      priceMin: priceMin !== undefined ? priceMin : null,
+      priceMax: priceMax !== undefined ? priceMax : null,
+      address: address || '',
+      typeOfRental: typeOfRental || '',
+      dimensions: dimensions || ''
+    });
+
+    console.log('Filters:', {
+      priceMin,
+      priceMax,
+      address,
+      typeOfRental,
+      dimensions
+    }); // Debug thông tin filters
   };
 
   const handleSort = (data) => {
@@ -124,9 +132,7 @@ export default function EcommerceShop() {
             { name: 'Cho thuê' },
           ]}
         />
-
         <SortBar onSort={handleSort} totalElements={totalProducts} />
-
         <Stack sx={{ mb: 3 }}>
           {!isDefault && (
             <>
@@ -137,7 +143,6 @@ export default function EcommerceShop() {
             </>
           )}
         </Stack>
-
         <ShopProductList products={products} loading={loading} />
       </Container>
     </Page>
@@ -161,4 +166,3 @@ function SortBar({ onSort, totalElements }) {
     </Stack>
   );
 }
-

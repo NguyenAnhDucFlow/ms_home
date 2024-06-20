@@ -3,6 +3,8 @@ package com.anhduc.backend.controller;
 import com.anhduc.backend.dto.PropertyListingDTO;
 import com.anhduc.backend.dto.PropertySearchCriteria;
 import com.anhduc.backend.dto.ResponseDTO;
+import com.anhduc.backend.dto.UpdateStatusRequest;
+import com.anhduc.backend.entity.PropertyListing;
 import com.anhduc.backend.entity.RentalType;
 import com.anhduc.backend.entity.VerificationStatus;
 import com.anhduc.backend.jwt.JwtTokenService;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -131,6 +134,11 @@ public class PropertyListingController {
                 .build();
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<PropertyListing> updateStatus(@PathVariable Long id, @RequestBody UpdateStatusRequest updateStatusRequest) {
+        PropertyListing updatedListing = propertyListingService.updateStatus(id, updateStatusRequest.getStatus());
+        return ResponseEntity.ok(updatedListing);
+    }
 
 
 }

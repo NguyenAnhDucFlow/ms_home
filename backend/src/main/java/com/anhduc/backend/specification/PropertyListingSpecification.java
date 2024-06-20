@@ -20,11 +20,13 @@ public class PropertyListingSpecification implements Specification<PropertyListi
         List<Predicate> predicates = new ArrayList<>();
 
         if (criteria.getPriceMin() != null) {
-            predicates.add(builder.greaterThanOrEqualTo(root.get("price"), criteria.getPriceMin()));
+            double convertedPriceMin = criteria.getPriceMin();
+            predicates.add(builder.greaterThanOrEqualTo(root.get("price"), convertedPriceMin));
         }
 
         if (criteria.getPriceMax() != null) {
-            predicates.add(builder.lessThanOrEqualTo(root.get("price"), criteria.getPriceMax()));
+            double convertedPriceMax = criteria.getPriceMax(); // Chuyển đổi từ triệu thành đơn vị tiền tệ thực tế
+            predicates.add(builder.lessThanOrEqualTo(root.get("price"), convertedPriceMax));
         }
 
         if (criteria.getAddress() != null && !criteria.getAddress().isEmpty()) {

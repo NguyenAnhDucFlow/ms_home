@@ -1,7 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import { paramCase } from 'change-case';
-import { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-// @mui
 import {
   Box,
   Card,
@@ -16,12 +15,9 @@ import {
   TablePagination,
   FormControlLabel,
 } from '@mui/material';
-// routes
 import { PATH_DASHBOARD } from '../../routes/paths';
-// hooks
 import useSettings from '../../hooks/useSettings';
 import useTable, { getComparator, emptyRows } from '../../hooks/useTable';
-// components
 import axios from '../../utils/axios';
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
@@ -34,10 +30,8 @@ import {
   TableHeadCustom,
   TableSelectedActions,
 } from '../../components/table';
-// sections
 import { ProductTableRow, ProductTableToolbar } from '../../sections/@dashboard/e-commerce/product-list';
-
-// ----------------------------------------------------------------------
+import useAuth from '../../hooks/useAuth';
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Title', align: 'left' },
@@ -47,9 +41,6 @@ const TABLE_HEAD = [
   { id: '' },
 ];
 
-
-// ----------------------------------------------------------------------
-
 export default function EcommerceProductList() {
   const {
     dense,
@@ -58,12 +49,10 @@ export default function EcommerceProductList() {
     orderBy,
     rowsPerPage,
     setPage,
-    //
     selected,
     setSelected,
     onSelectRow,
     onSelectAllRows,
-    //
     onSort,
     onChangeDense,
     onChangePage,
@@ -73,7 +62,7 @@ export default function EcommerceProductList() {
   });
 
   const { themeStretch } = useSettings();
-
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
@@ -84,9 +73,8 @@ export default function EcommerceProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get('/api/listings/top8/PENDING');
-        console.log("responssssssssssssssssse", response.data.data)
-        setProducts(response.data.data);
+        const response = await axios.get('/api/listings/search');
+        setProducts(response.data.data.content);
         setIsLoading(false);
       } catch (error) {
         console.error('Failed to fetch products:', error);
@@ -95,7 +83,7 @@ export default function EcommerceProductList() {
     }
 
     fetchProducts();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (products.length) {
@@ -121,7 +109,14 @@ export default function EcommerceProductList() {
   };
 
   const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.eCommerce.edit(paramCase(id)));
+    navigate(PATH_DASHBOARD.eCommerce.edit(id));
+  };
+
+  const handleStatusChange = (id, newStatus) => {
+    const updatedTableData = tableData.map((row) =>
+      row.id === id ? { ...row, verificationStatus: newStatus } : row
+    );
+    setTableData(updatedTableData);
   };
 
   const dataFiltered = applySortFilter({
@@ -135,17 +130,13 @@ export default function EcommerceProductList() {
   const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
 
   return (
-    <Page title="Ecommerce: Product List">
+    <Page title="Danh sách bài đăng">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Product List"
+          heading="Danh sách bài đăng"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            {
-              name: 'E-Commerce',
-              href: PATH_DASHBOARD.eCommerce.root,
-            },
-            { name: 'Product List' },
+            { name: 'Danh sách bài đăng' },
           ]}
           action={
             <Button
@@ -213,6 +204,7 @@ export default function EcommerceProductList() {
                           onSelectRow={() => onSelectRow(row.id)}
                           onDeleteRow={() => handleDeleteRow(row.id)}
                           onEditRow={() => handleEditRow(row.name)}
+                          onStatusChange={handleStatusChange} // Pass the handler to the row component
                         />
                       ) : (
                         !isNotFound && <TableSkeleton key={index} sx={{ height: denseHeight }} />
@@ -249,8 +241,6 @@ export default function EcommerceProductList() {
     </Page>
   );
 }
-
-// ----------------------------------------------------------------------
 
 function applySortFilter({ tableData, comparator, filterName }) {
   const stabilizedThis = tableData.map((el, index) => [el, index]);

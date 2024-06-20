@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Button, FormControl, MenuItem, TextField, InputLabel, Select, Grid, Divider } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
-import axios from '../../../../utils/axios';
 
 export default function FilterBar({ onSearch }) {
     const { control, handleSubmit } = useForm({
@@ -16,22 +15,25 @@ export default function FilterBar({ onSearch }) {
     const onSubmit = async (data) => {
         let priceMin = null;
         let priceMax = null;
-        if (data.priceRange === 'below1000000') {
-            priceMax = 1;
-        } else if (data.priceRange === '1000000to5000000') {
-            priceMin = 1;
-            priceMax = 5;
-        } else if (data.priceRange === 'above5000000') {
-            priceMin = 5;
+
+        if (data.priceRange === 'below1') {
+            priceMax = 1 * 1000000;
+        } else if (data.priceRange === '1to5') {
+            priceMin = 1 * 1000000;
+            priceMax = 5 * 1000000;
+        } else if (data.priceRange === 'above5') {
+            priceMin = 5 * 1000000;
         }
 
         const filterParams = {
-            priceMin: priceMin || undefined,
-            priceMax: priceMax || undefined,
+            priceMin: priceMin !== null ? priceMin : undefined,
+            priceMax: priceMax !== null ? priceMax : undefined,
             address: data.address || undefined,
             typeOfRental: data.typeOfRental || undefined,
             dimensions: data.dimensions || undefined,
         };
+
+        console.log('Filter Params:', filterParams); // Debug thông tin filter params
 
         onSearch(filterParams);
     };
@@ -84,9 +86,9 @@ export default function FilterBar({ onSearch }) {
                                     size="small"
                                 >
                                     <MenuItem value=""><em>None</em></MenuItem>
-                                    <MenuItem value="below1000000">Below 1,000,000</MenuItem>
-                                    <MenuItem value="1000000to5000000">1,000,000 - 5,000,000</MenuItem>
-                                    <MenuItem value="above5000000">Above 5,000,000</MenuItem>
+                                    <MenuItem value="below1">Below 1 triệu</MenuItem>
+                                    <MenuItem value="1to5">1 triệu - 5 triệu</MenuItem>
+                                    <MenuItem value="above5">Above 5 triệu</MenuItem>
                                 </Select>
                             )}
                         />
