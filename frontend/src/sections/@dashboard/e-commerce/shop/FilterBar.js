@@ -17,12 +17,12 @@ export default function FilterBar({ onSearch }) {
         let priceMax = null;
 
         if (data.priceRange === 'below1') {
-            priceMax = 1 * 1000000;
+            priceMax = 1;
         } else if (data.priceRange === '1to5') {
-            priceMin = 1 * 1000000;
-            priceMax = 5 * 1000000;
+            priceMin = 1;
+            priceMax = 5;
         } else if (data.priceRange === 'above5') {
-            priceMin = 5 * 1000000;
+            priceMin = 5;
         }
 
         const filterParams = {
@@ -33,7 +33,7 @@ export default function FilterBar({ onSearch }) {
             dimensions: data.dimensions || undefined,
         };
 
-        console.log('Filter Params:', filterParams); // Debug thông tin filter params
+        console.log('Filter Params:', filterParams);
 
         onSearch(filterParams);
     };
