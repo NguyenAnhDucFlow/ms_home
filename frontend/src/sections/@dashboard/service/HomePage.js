@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Container, Typography, Box, Grid, Paper, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import ServiceDialog from './ServiceDialog';
+import useAuth from '../../../hooks/useAuth'; // Import useAuth hook
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(2),
@@ -36,9 +38,15 @@ function ServiceCard({ service, onClick }) {
 
 export default function HomePage() {
     const [selectedService, setSelectedService] = useState(null);
+    const { isAuthenticated } = useAuth(); // Get authentication status
+    const navigate = useNavigate();
 
     const handleClickOpen = (service) => {
-        setSelectedService(service);
+        if (isAuthenticated) {
+            setSelectedService(service);
+        } else {
+            navigate('/auth/login');
+        }
     };
 
     const handleClose = () => {

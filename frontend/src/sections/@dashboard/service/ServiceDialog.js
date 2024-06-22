@@ -1,22 +1,15 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Typography, Grid, Snackbar, IconButton } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Alert, Typography, Grid, Snackbar } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
-import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 import axios from '../../../utils/axios';
+import useAuth from '../../../hooks/useAuth'; // Import useAuth hook
 
 export default function ServiceDialog({ open, handleClose, service }) {
     const { control, handleSubmit, reset } = useForm();
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-
-    const handleSnackbarClose = () => {
-        setSnackbarOpen(false);
-    };
-
-    const handleSnackbarOpen = (message) => {
-        setSnackbarMessage(message);
-        setSnackbarOpen(true);
-    };
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth(); // Get authentication status
 
     const onSubmit = async (data) => {
         try {
@@ -26,18 +19,24 @@ export default function ServiceDialog({ open, handleClose, service }) {
             }
             const response = await axios.post('/api/services/create', requestData);
             console.log('API Response:', response.data);
-
-            // Đóng dialog và reset form sau khi gửi thành công
-            handleClose();
+            setSnackbar({ open: true, message: 'Đăng ký dịch vụ thành công!', severity: 'success' });
             reset();
-
-            // Hiển thị Snackbar thông báo thành công
-            handleSnackbarOpen('Đăng ký dịch vụ thành công!');
+            handleClose();
         } catch (error) {
             console.error('Error submitting form:', error);
-            // Hiển thị Snackbar thông báo lỗi nếu có
-            handleSnackbarOpen('Đã xảy ra lỗi, vui lòng thử lại sau.');
+            // Show error message
+            setSnackbar({ open: true, message: 'Có lỗi xảy ra, vui lòng thử lại sau!', severity: 'error' });
         }
+    };
+
+    const handleOpen = () => {
+        if (!isAuthenticated) {
+            navigate('/auth/login');
+        }
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar({ ...snackbar, open: false });
     };
 
     return (
@@ -218,23 +217,21 @@ export default function ServiceDialog({ open, handleClose, service }) {
                         <Button onClick={handleClose} color="secondary" variant="outlined">
                             Hủy bỏ
                         </Button>
-                        <Button type="submit" color="primary" variant="contained">
+                        <Button type="submit" color="primary" variant="contained" onClick={handleOpen}>
                             Đăng ký
                         </Button>
                     </DialogActions>
                 </form>
             </DialogContent>
             <Snackbar
-                open={snackbarOpen}
+                open={snackbar.open}
                 autoHideDuration={6000}
-                onClose={handleSnackbarClose}
-                message={snackbarMessage}
-                action={
-                    <IconButton size="small" aria-label="close" color="inherit" onClick={handleSnackbarClose}>
-                        <CloseIcon fontSize="small" />
-                    </IconButton>
-                }
-            />
+                onClose={handleCloseSnackbar}
+            >
+                <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Dialog>
     );
 }

@@ -1,5 +1,5 @@
 import { sentenceCase } from 'change-case';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { alpha, styled } from '@mui/material/styles';
 import {
@@ -18,6 +18,7 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import { PATH_DASHBOARD } from '../../routes/paths';
 import axios from '../../utils/axios';
 import { ProductDetailsSummary, ProductDetailsCarousel } from '../../sections/@dashboard/e-commerce/product-details';
+import useAuth from '../../hooks/useAuth'; // import useAuth hook
 
 const IconWrapperStyle = styled('div')(({ theme }) => ({
   margin: 'auto',
@@ -94,6 +95,8 @@ export default function EcommerceProductDetails() {
   const [open, setOpen] = useState(false);
   const [listingId, setListingId] = useState(null);
   const [landlordId, setLandlordId] = useState(null);
+  const { isAuthenticated } = useAuth(); // get authentication status
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -142,7 +145,11 @@ export default function EcommerceProductDetails() {
   };
 
   const handleOpen = () => {
-    setOpen(true);
+    if (isAuthenticated) {
+      setOpen(true);
+    } else {
+      navigate('/auth/login');
+    }
   };
 
   const handleClose = () => {
@@ -393,7 +400,7 @@ export default function EcommerceProductDetails() {
               required
               sx={{ mb: 2 }}
               inputProps={{
-                step: 1, // Allow input seconds
+                step: 1,
               }}
             />
             <TextField

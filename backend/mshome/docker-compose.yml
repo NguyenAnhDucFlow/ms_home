@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  spring-boot-app:
+    build:
+      context: ./spring-boot-app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  react-app:
+    build:
+      context: ./react-app
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
