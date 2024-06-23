@@ -1,19 +1,23 @@
-version: '3.8'
-
+version: '2'
 services:
   backend:
-    build: ./backend
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    image: backend:1.0
+    restart: on-failure
     ports:
-      - "8080:8080"
-    networks:
-      - my-network
-
+      - 8080:8080
+    # env_file:
+    #   - /home/audiobook/config/prod.env
+    # volumes:
+    #   - /storage/:/storage/
+    #   - /home/audiobook/config/:/config/
   frontend:
-    build: ./frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    image: frontend:1.0
+    restart: on-failure
     ports:
-      - "80:80"
-    networks:
-      - my-network
-
-networks:
-  my-network:
+      - 80:80
