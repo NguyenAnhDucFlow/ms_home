@@ -121,7 +121,7 @@ export default function EcommerceShop() {
 
   return (
     <Page title="Cho thuê">
-      <Container maxWidth={themeStretch ? false : 'lg'} sx={{ mt: 15 }}>
+      <Container maxWidth={themeStretch ? false : 'lg'} sx={{ my: 15 }}>
         <FilterBar onSearch={handleSearch} />
         <HeaderBreadcrumbs
           links={[

@@ -8,11 +8,6 @@ services:
     restart: on-failure
     ports:
       - 8080:8080
-    # env_file:
-    #   - /home/audiobook/config/prod.env
-    # volumes:
-    #   - /storage/:/storage/
-    #   - /home/audiobook/config/:/config/
   frontend:
     build:
       context: frontend
@@ -20,4 +15,4 @@ services:
     image: frontend:1.0
     restart: on-failure
     ports:
-      - 80:80
+      - 8888:80
