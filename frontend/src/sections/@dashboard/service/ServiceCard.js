@@ -23,7 +23,7 @@ export default function ServiceCard({ dataCart }) {
       <Stack spacing={1} sx={{ p: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" component="div" color="text.primary">
-            {formatCurrency({price})} /tháng
+            {formatCurrency(price)} /tháng
           </Typography>
           <IconButton size='small'>
             <FavoriteBorderIcon />

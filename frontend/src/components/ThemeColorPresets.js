@@ -21,7 +21,7 @@ export default function ThemeColorPresets({ children }) {
     () => ({
       ...defaultTheme,
       palette: {
-        ...defaultTheme.palette.info,
+        ...defaultTheme.palette,
         primary: setColor,
       },
       customShadows: {
