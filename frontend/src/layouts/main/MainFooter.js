@@ -31,7 +31,7 @@ const LINKS = [
     children: [
       { name: 'Lô E2a-7, đường D1, Long Thạnh Mỹ, TP Thủ Đức', href: '#' },
       { name: '(84) 902797237', href: '#' },
-      { name: 'mshome2024@gmail.com', href: '#' },
+      { name: 'hotro.mshome@gmail.com', href: '#' },
     ],
   },
 ];

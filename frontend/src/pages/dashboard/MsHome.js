@@ -24,24 +24,24 @@ export default function MsHome() {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AnalyticsWidgetSummary title="Số hợp đồng" total={714000} icon={'teenyicons:contract-outline'} />
+            <AnalyticsWidgetSummary title="Số hợp đồng" total={0} icon={'teenyicons:contract-outline'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AnalyticsWidgetSummary title="Số lượng đối tác" total={1352831} color="info" icon={'carbon:partnership'} />
+            <AnalyticsWidgetSummary title="Số lượng đối tác" total={0} color="info" icon={'carbon:partnership'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
             <AnalyticsWidgetSummary
               title="Doanh thu"
-              total={1723315}
+              total={0}
               color="warning"
               icon={'streamline:dollar-coin'}
             />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AnalyticsWidgetSummary title="Người dùng" total={234} color="error" icon={'tdesign:user'} />
+            <AnalyticsWidgetSummary title="Người dùng" total={10} color="error" icon={'tdesign:user'} />
           </Grid>
 
           <Grid item xs={12}>

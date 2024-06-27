@@ -97,6 +97,11 @@ export default function EcommerceProductDetails() {
   const [landlordId, setLandlordId] = useState(null);
   const { isAuthenticated } = useAuth(); // get authentication status
   const navigate = useNavigate();
+  const formatPrice = (price) => {
+    const million = price / 1000000;
+    return million >= 1 ? `${million} triệu/tháng` : `${(price / 1000000).toFixed(1)} triệu/tháng`;
+  };
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -185,7 +190,7 @@ export default function EcommerceProductDetails() {
                   <InfoWrapper>
                     <div className="info">
                       <Typography variant="body2" color="textSecondary">Mức giá</Typography>
-                      <Typography variant="h6">{product.price} triệu/tháng</Typography>
+                      <Typography variant="h6">{formatPrice(product.price)}</Typography>
                     </div>
                     <div className="info">
                       <Typography variant="body2" color="textSecondary">Diện tích</Typography>
